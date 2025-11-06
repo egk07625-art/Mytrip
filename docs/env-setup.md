@@ -31,11 +31,12 @@ NEXT_PUBLIC_STORAGE_BUCKET=uploads
 ### 한국관광공사 API 키 발급
 
 1. [공공데이터포털](https://www.data.go.kr/) 접속
-2. "한국관광공사_국문 관광정보 서비스" 검색
+2. "한국관광공사\_국문 관광정보 서비스" 검색
 3. 활용신청 후 서비스 키 발급
 4. 발급받은 키를 `NEXT_PUBLIC_TOUR_API_KEY`에 설정
 
-**참고**: 
+**참고**:
+
 - `NEXT_PUBLIC_` 접두사가 있으면 클라이언트에서 접근 가능
 - 서버 사이드 전용이면 접두사 없이 사용 (`TOUR_API_KEY`)
 
@@ -64,4 +65,15 @@ Get-Content .env.local
 - 실제 API 키는 절대 공개 저장소에 커밋하지 마세요
 - 배포 환경(Vercel 등)에서는 프로젝트 설정에서 환경변수를 별도로 설정해야 합니다
 
+## Vercel 배포 시 환경변수 설정
 
+로컬에서는 정상 작동하지만 Vercel 배포 환경에서 API 에러가 발생하는 경우, Vercel에 환경변수가 설정되지 않았을 가능성이 높습니다.
+
+**자세한 설정 방법**: [Vercel 환경변수 설정 가이드](./vercel-env-setup.md)
+
+**빠른 설정**:
+
+1. Vercel 대시보드 → 프로젝트 선택 → **Settings** → **Environment Variables**
+2. `TOUR_API_KEY` 또는 `NEXT_PUBLIC_TOUR_API_KEY` 추가
+3. 실제 API 키 값 입력
+4. **Save** 후 **재배포** (환경변수 변경 후 필수!)

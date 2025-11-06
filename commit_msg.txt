@@ -1,28 +1,10 @@
-feat: implement tour card and list components with API integration
+fix: resolve dynamic server error and improve API error handling
 
-- Add TourCard component for displaying individual tour attractions
-  - Implement Next.js Image component for optimized images
-  - Add placeholder handling for missing images
-  - Support responsive design and dark mode
-  - Improve accessibility with ARIA labels and alt text
-  - Follow Spacing-First policy and Tailwind CSS only
+- Remove headers() usage in app/page.tsx to fix static rendering error
+- Use environment variables (NEXT_PUBLIC_APP_URL, VERCEL_URL) for URL construction
+- Add detailed debugging logs in tour API route for 401 error diagnosis
+- Improve error messages with troubleshooting steps for API key issues
 
-- Add TourList component for displaying tour grid
-  - Implement responsive grid layout (1/2/3 columns)
-  - Add empty state handling
-  - Follow design guidelines and spacing policies
-
-- Fix API route issues
-  - Add contentTypeId as required parameter for areaBasedList2
-  - Fix parameter validation logic to exclude common params
-  - Improve error handling and logging for API calls
-  - Add API key trimming to handle whitespace issues
-
-- Update page layout and styling
-  - Fix fetchTourList function parameters (add contentTypeId)
-  - Adjust layout to use full width until map is implemented
-  - Fix Navbar profile button alignment to right side
-  - Improve overall screen ratio and user experience
-
-- Update documentation
-  - Mark Phase 2.2 tasks as completed in TODO.md
+Fixes:
+- Build error: "Route / couldn't be rendered statically because it used headers"
+- Better error handling and debugging for 401 authentication errors
