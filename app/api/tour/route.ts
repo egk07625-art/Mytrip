@@ -88,6 +88,16 @@ type EndpointType = keyof typeof ENDPOINT_CONFIG;
  */
 export async function GET(request: NextRequest) {
   try {
+    // 환경변수 확인 및 디버깅
+    const apiKeyEnv = process.env.TOUR_API_KEY || process.env.NEXT_PUBLIC_TOUR_API_KEY;
+    console.group(`[Tour API] Environment Check`);
+    console.log("TOUR_API_KEY exists:", !!process.env.TOUR_API_KEY);
+    console.log("NEXT_PUBLIC_TOUR_API_KEY exists:", !!process.env.NEXT_PUBLIC_TOUR_API_KEY);
+    console.log("Final API Key exists:", !!apiKeyEnv);
+    console.log("API Key length:", apiKeyEnv?.length || 0);
+    console.log("API Key preview:", apiKeyEnv?.substring(0, 10) + "..." || "N/A");
+    console.groupEnd();
+    
     const searchParams = request.nextUrl.searchParams;
     const endpoint = searchParams.get("endpoint") as EndpointType | null;
 
@@ -172,16 +182,21 @@ export async function GET(request: NextRequest) {
       console.error("Request URL (masked):", apiUrl.replace(getTourApiKey(), "***"));
       console.error("API Key exists:", !!getTourApiKey());
       console.error("API Key length:", getTourApiKey().length);
+      console.error("API Key first 10 chars:", getTourApiKey().substring(0, 10));
+      console.error("Full error response:", errorText);
       console.groupEnd();
 
       // 401 에러인 경우 더 자세한 정보 제공
       if (response.status === 401) {
+        // 공공데이터포털 API 401 에러는 보통 API 키 문제 또는 인코딩 문제
         return NextResponse.json(
           {
             error: "Authentication failed",
-            message: "API 키가 유효하지 않거나 인증에 실패했습니다. 환경변수 TOUR_API_KEY 또는 NEXT_PUBLIC_TOUR_API_KEY를 확인해주세요.",
+            message: "API 키가 유효하지 않거나 인증에 실패했습니다. 아래 사항을 확인해주세요:\n1. Vercel에 TOUR_API_KEY 환경변수가 설정되어 있는지\n2. 환경변수 설정 후 재배포를 했는지\n3. API 키가 올바른지 (공공데이터포털에서 확인)\n4. API 키에 공백이나 특수문자가 포함되어 있지 않은지",
             status: response.status,
-            details: errorText.substring(0, 500), // 에러 메시지 처음 500자만
+            details: errorText.substring(0, 1000), // 에러 메시지 처음 1000자
+            apiKeyLength: getTourApiKey().length,
+            apiKeyPreview: getTourApiKey().substring(0, 10) + "...",
           },
           { status: response.status }
         );

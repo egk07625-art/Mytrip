@@ -21,7 +21,6 @@
  * - @/lib/types/tour: TourItem 타입
  */
 
-import { headers } from "next/headers";
 import TourList from "@/components/tour-list";
 import ErrorMessage from "@/components/error-message";
 import type { TourItem, ApiResponse } from "@/lib/types/tour";
@@ -44,11 +43,12 @@ async function fetchTourList(
     console.group("[Home] Fetching tour list");
     console.log("Params:", { areaCode, contentTypeId, numOfRows, pageNo });
 
-    // Server Component에서 호스트 정보 가져오기
-    const headersList = await headers();
-    const host = headersList.get("host") || "localhost:3000";
-    const protocol = headersList.get("x-forwarded-proto") || (host.includes("localhost") ? "http" : "https");
-    const baseUrl = `${protocol}://${host}`;
+    // Server Component에서 내부 API 호출 시 절대 URL 필요
+    // Vercel에서는 VERCEL_URL 환경변수 사용 (빌드 타임에는 없을 수 있음)
+    const baseUrl = 
+      process.env.NEXT_PUBLIC_APP_URL || 
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined) ||
+      "http://localhost:3000";
     
     const apiUrl = new URL("/api/tour", baseUrl);
     apiUrl.searchParams.set("endpoint", "areaBasedList");
