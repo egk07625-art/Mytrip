@@ -431,5 +431,6 @@ try {
 // 실패가 있으면 종료 코드 1
 process.exit(summary.failed > 0 ? 1 : 0);
 
-export { verifyGuidelines, generateReport, VerificationResult, VerificationSummary };
+export { verifyGuidelines, generateReport };
+export type { VerificationResult, VerificationSummary };
 
