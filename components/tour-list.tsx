@@ -45,16 +45,19 @@ export default function TourList({ tours, className }: TourListProps) {
   // 빈 상태 처리
   if (tours.length === 0) {
     return (
-      <div className={`flex flex-col items-center justify-center gap-4 p-12 text-center ${className || ""}`}>
+      <div className={`flex flex-col items-center justify-center gap-4 p-12 text-center ${className || ""}`} role="status" aria-live="polite">
         <p className="text-lg text-gray-600 dark:text-gray-400">
-          표시할 관광지가 없습니다.
+          조건에 맞는 관광지가 없습니다.
+        </p>
+        <p className="text-sm text-gray-500 dark:text-gray-500">
+          다른 필터를 선택해보시거나 나중에 다시 시도해주세요.
         </p>
       </div>
     );
   }
 
   return (
-    <div className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6 ${className || ""}`}>
+    <div className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-5 lg:gap-6 ${className || ""}`}>
       {tours.map((tour) => (
         <TourCard key={tour.contentid} tour={tour} />
       ))}

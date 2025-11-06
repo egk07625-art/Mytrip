@@ -40,11 +40,11 @@ export default function ErrorMessage({
 
     switch (type) {
       case "api":
-        return "데이터를 불러오는 중 오류가 발생했습니다.";
+        return "관광지 정보를 불러오는 중 오류가 발생했습니다.";
       case "network":
-        return "네트워크 연결을 확인해주세요.";
+        return "네트워크 연결을 확인해주세요. 인터넷 연결 상태를 확인한 후 다시 시도해주세요.";
       default:
-        return "오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
+        return "예상치 못한 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
     }
   };
 

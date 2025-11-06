@@ -55,7 +55,8 @@ const ENDPOINT_CONFIG = {
   },
   areaBasedList: {
     path: "/areaBasedList2",
-    requiredParams: ["serviceKey", "MobileOS", "MobileApp", "areaCode", "contentTypeId"],
+    requiredParams: ["serviceKey", "MobileOS", "MobileApp", "areaCode"],
+    optionalParams: ["contentTypeId"], // contentTypeId는 선택적 (필터에서 "전체" 선택 시)
   },
   searchKeyword: {
     path: "/searchKeyword2",
@@ -147,7 +148,9 @@ export async function GET(request: NextRequest) {
     }
 
     // 선택적 파라미터 추가 (numOfRows, pageNo 등)
-    const optionalParams = ["numOfRows", "pageNo", "sigunguCode"];
+    // 엔드포인트별 선택적 파라미터도 포함 (config에 optionalParams가 있으면)
+    const endpointOptionalParams = (config as any).optionalParams || [];
+    const optionalParams = ["numOfRows", "pageNo", "sigunguCode", ...endpointOptionalParams];
     for (const param of optionalParams) {
       const value = searchParams.get(param);
       if (value) {
