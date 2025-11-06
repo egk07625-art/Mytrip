@@ -91,11 +91,15 @@ export async function GET(request: NextRequest) {
     // 환경변수 확인 및 디버깅
     const apiKeyEnv = process.env.TOUR_API_KEY || process.env.NEXT_PUBLIC_TOUR_API_KEY;
     console.group(`[Tour API] Environment Check`);
+    console.log("Request URL:", request.url);
+    console.log("Request headers:", Object.fromEntries(request.headers.entries()));
     console.log("TOUR_API_KEY exists:", !!process.env.TOUR_API_KEY);
     console.log("NEXT_PUBLIC_TOUR_API_KEY exists:", !!process.env.NEXT_PUBLIC_TOUR_API_KEY);
     console.log("Final API Key exists:", !!apiKeyEnv);
     console.log("API Key length:", apiKeyEnv?.length || 0);
     console.log("API Key preview:", apiKeyEnv?.substring(0, 10) + "..." || "N/A");
+    console.log("VERCEL_URL:", process.env.VERCEL_URL || "N/A");
+    console.log("NEXT_PUBLIC_APP_URL:", process.env.NEXT_PUBLIC_APP_URL || "N/A");
     console.groupEnd();
     
     const searchParams = request.nextUrl.searchParams;

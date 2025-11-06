@@ -211,6 +211,10 @@
   - [x] API 클라이언트에서 환경변수 처리 구현
   - [x] 환경변수 설정 가이드 작성 (`docs/env-setup.md`)
 - [ ] Vercel 배포 및 테스트
+  - [x] Server Component에서 내부 API 호출 시 baseUrl 결정 로직 개선
+  - [x] Next.js 15 headers() API를 사용하여 동적 URL 결정
+  - [x] 디버깅 로그 강화 (요청 URL, 헤더, 환경변수 확인)
+  - [x] Vercel 401 에러 해결 가이드 작성 (`docs/vercel-401-error-fix.md`)
 - [ ] 최종 가이드라인 준수 체크리스트
   - [ ] 불필요한 추상화가 없는가?
   - [ ] Export 규칙을 준수했는가?

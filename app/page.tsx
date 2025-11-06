@@ -47,11 +47,28 @@ async function fetchTourList(
     console.log("Params:", { areaCode, contentTypeId, numOfRows, pageNo });
 
     // Server Component에서 내부 API 호출 시 절대 URL 필요
-    // Vercel에서는 VERCEL_URL 환경변수 사용 (빌드 타임에는 없을 수 있음)
-    const baseUrl = 
-      process.env.NEXT_PUBLIC_APP_URL || 
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined) ||
-      "http://localhost:3000";
+    // Next.js 15의 headers()를 사용하여 요청 URL 가져오기
+    const headersList = await import("next/headers").then((m) => m.headers());
+    const host = headersList.get("host");
+    const protocol = headersList.get("x-forwarded-proto") || "https";
+    
+    // baseUrl 결정 로직 개선
+    let baseUrl: string;
+    if (host) {
+      // Vercel 배포 환경에서 host 헤더 사용
+      baseUrl = `${protocol}://${host}`;
+    } else if (process.env.NEXT_PUBLIC_APP_URL) {
+      // 명시적으로 설정된 APP_URL 사용
+      baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+    } else if (process.env.VERCEL_URL) {
+      // Vercel 자동 URL 사용
+      baseUrl = `https://${process.env.VERCEL_URL}`;
+    } else {
+      // 개발 환경 기본값
+      baseUrl = "http://localhost:3000";
+    }
+    
+    console.log("[Home] Base URL:", baseUrl);
     
     const apiUrl = new URL("/api/tour", baseUrl);
     apiUrl.searchParams.set("endpoint", "areaBasedList");
@@ -60,15 +77,22 @@ async function fetchTourList(
     apiUrl.searchParams.set("numOfRows", numOfRows.toString());
     apiUrl.searchParams.set("pageNo", pageNo.toString());
 
+    console.log("[Home] API URL:", apiUrl.toString());
+
     const response = await fetch(apiUrl.toString(), {
       next: {
         revalidate: 3600, // 1시간 캐싱
+      },
+      // Vercel에서 내부 API 호출 시 헤더 추가 (필요시)
+      headers: {
+        "x-forwarded-host": host || "",
       },
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error("API Error:", response.status, errorData);
+      console.error("[Home] API Error:", response.status, errorData);
+      console.error("[Home] Response headers:", Object.fromEntries(response.headers.entries()));
       console.groupEnd();
       return {
         tours: [],

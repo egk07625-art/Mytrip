@@ -1,7 +1,16 @@
-chore: clean build cache and reinstall dependencies
+fix: improve baseUrl resolution for internal API calls in Vercel deployment
 
-- Remove .next build folder
-- Remove node_modules and reinstall dependencies
-- Clean pnpm cache for fresh build
+- Use Next.js 15 headers() API to get request URL dynamically
+- Improve baseUrl determination logic for Vercel environment
+- Add detailed logging for debugging API requests
+- Add comprehensive error handling and diagnostics
 
-This ensures a clean build environment for Vercel deployment.
+Changes:
+- app/page.tsx: Use headers() to get host and protocol from request
+- app/api/tour/route.ts: Add request URL and headers logging
+- Add fallback logic for baseUrl: host header → NEXT_PUBLIC_APP_URL → VERCEL_URL → localhost
+- Improve error messages with detailed diagnostics
+
+This fixes 401 errors that occur when Server Component tries to call
+internal API routes in Vercel deployment environment where baseUrl
+was not properly resolved.
