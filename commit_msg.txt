@@ -1,10 +1,7 @@
-fix: resolve dynamic server error and improve API error handling
+chore: clean build cache and reinstall dependencies
 
-- Remove headers() usage in app/page.tsx to fix static rendering error
-- Use environment variables (NEXT_PUBLIC_APP_URL, VERCEL_URL) for URL construction
-- Add detailed debugging logs in tour API route for 401 error diagnosis
-- Improve error messages with troubleshooting steps for API key issues
+- Remove .next build folder
+- Remove node_modules and reinstall dependencies
+- Clean pnpm cache for fresh build
 
-Fixes:
-- Build error: "Route / couldn't be rendered statically because it used headers"
-- Better error handling and debugging for 401 authentication errors
+This ensures a clean build environment for Vercel deployment.
