@@ -21,6 +21,7 @@
  * - @/lib/types/tour: TourItem 타입
  */
 
+import { headers } from "next/headers";
 import TourList from "@/components/tour-list";
 import ErrorMessage from "@/components/error-message";
 import type { TourItem, ApiResponse } from "@/lib/types/tour";
@@ -43,7 +44,13 @@ async function fetchTourList(
     console.group("[Home] Fetching tour list");
     console.log("Params:", { areaCode, contentTypeId, numOfRows, pageNo });
 
-    const apiUrl = new URL("/api/tour", process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000");
+    // Server Component에서 호스트 정보 가져오기
+    const headersList = await headers();
+    const host = headersList.get("host") || "localhost:3000";
+    const protocol = headersList.get("x-forwarded-proto") || (host.includes("localhost") ? "http" : "https");
+    const baseUrl = `${protocol}://${host}`;
+    
+    const apiUrl = new URL("/api/tour", baseUrl);
     apiUrl.searchParams.set("endpoint", "areaBasedList");
     apiUrl.searchParams.set("areaCode", areaCode);
     apiUrl.searchParams.set("contentTypeId", contentTypeId);
