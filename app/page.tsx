@@ -7,13 +7,14 @@
  * 주요 기능:
  * 1. 관광지 목록 표시 (Phase 2.2 완료)
  * 2. 지역/타입 필터 (Phase 2.3 완료)
- * 3. 키워드 검색 (Phase 2.4에서 구현 예정)
+ * 3. 키워드 검색 (Phase 2.4.1 완료 - UI 컴포넌트)
  * 4. 네이버 지도 연동 (Phase 2.5에서 구현 예정)
  *
  * 현재 단계:
  * - TourList 컴포넌트 통합 완료
  * - TourFilters 컴포넌트 통합 완료 (URL 파라미터 기반)
- * - 향후 검색, 지도가 추가될 수 있도록 섹션별로 구조화
+ * - TourSearch 컴포넌트 통합 완료 (URL 파라미터 기반)
+ * - 향후 검색 API 연동, 지도가 추가될 수 있도록 섹션별로 구조화
  *
  * 핵심 구현 로직:
  * - Server Component에서 URL 파라미터 읽기 (Next.js 15 await searchParams)
@@ -26,6 +27,7 @@
  * - Tailwind CSS v4
  * - @/components/tour-list: TourList 컴포넌트
  * - @/components/tour-filters: TourFilters 컴포넌트
+ * - @/components/tour-search: TourSearch 컴포넌트
  * - @/lib/api/tour-api-client: fetchAreaCodes 함수
  * - @/lib/types/tour: TourItem, AreaCode 타입
  */
@@ -33,6 +35,7 @@
 import TourList from "@/components/tour-list";
 import TourListWrapper from "@/components/tour-list-wrapper";
 import TourFilters from "@/components/tour-filters";
+import TourSearch from "@/components/tour-search";
 import ErrorMessageWithRetry from "@/components/error-message-with-retry";
 import { fetchAreaCodes } from "@/lib/api/tour-api-client";
 import type { TourItem, ApiResponse } from "@/lib/types/tour";
@@ -148,6 +151,7 @@ async function fetchTourList(
 
 interface HomeProps {
   searchParams: Promise<{
+    keyword?: string;
     areaCode?: string;
     contentTypeId?: string;
   }>;
@@ -157,7 +161,9 @@ export default async function Home({ searchParams }: HomeProps) {
   // Next.js 15: searchParams는 Promise로 반환되므로 await 필요
   const params = await searchParams;
 
-  // URL 파라미터에서 필터 값 읽기
+  // URL 파라미터에서 필터 및 검색 값 읽기
+  // keyword는 선택적 (검색 기능은 Phase 2.4.2에서 API 연동 예정)
+  const keyword = params.keyword;
   // areaCode가 없거나 빈 값이면 기본값 "1" (서울) 사용
   // 필터에서 "전체"를 선택하면 areaCode 파라미터가 없으므로 기본값 사용
   const areaCode = params.areaCode || "1";
@@ -165,7 +171,7 @@ export default async function Home({ searchParams }: HomeProps) {
   const contentTypeId = params.contentTypeId;
 
   console.group("[Home] Page render");
-  console.log("URL params:", { areaCode, contentTypeId });
+  console.log("URL params:", { keyword, areaCode, contentTypeId });
   console.log("Search params:", params);
 
   // 지역코드 목록 조회 (API 실패 시 기본 목록 반환)
@@ -195,6 +201,8 @@ export default async function Home({ searchParams }: HomeProps) {
         {/* 필터 및 컨트롤 영역 */}
         <section className="pb-8">
           <div className="flex flex-col gap-4">
+            {/* 검색 영역 */}
+            <TourSearch />
             {/* 필터 영역 */}
             <TourFilters areaCodes={areaCodes} />
           </div>
