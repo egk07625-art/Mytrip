@@ -2,22 +2,45 @@
 
 > 개발 시 `docs/guide.md` 가이드라인을 반드시 준수합니다.
 
+## 📊 진행 상황 요약
+
+- **Phase 0**: ✅ 완료 (개발 환경 준비)
+- **Phase 1**: ✅ 완료 (기본 구조 & 공통 설정)
+- **Phase 2**: ⏳ 진행 중 (홈페이지 - 관광지 목록)
+- **Phase 3**: ⏸️ 대기 중 (상세페이지)
+- **Phase 4**: ⏸️ 대기 중 (북마크 페이지)
+- **Phase 5**: ⏸️ 부분 완료 (최적화 & 배포)
+
+**다음 단계**: Phase 2.2 관광지 목록 기능 구현 시작
+
 ## Phase 0: 개발 환경 및 가이드라인 준비
 
 - [x] `docs/guide.md` 가이드라인 숙지
 - [x] 기존 컴포넌트 라이브러리 확인 (`/components/ui/`)
-  - [x] shadcn/ui 컴포넌트 7개 확인 (button, input, form, label, textarea, dialog, accordion)
+  - [x] shadcn/ui 컴포넌트 확인 (button, input, form, label, textarea, dialog, accordion, loading-spinner, skeleton)
   - [x] named export 패턴 확인
 - [x] 개발 가이드라인 준수 계획 수립
   - [x] `docs/guide-compliance-plan.md` 작성 완료
 
 ## Phase 1: 기본 구조 & 공통 설정
 
-- [ ] 프로젝트 셋업
-- [ ] API 클라이언트 구현 (`app/api/tour/route.ts`)
-- [ ] 기본 타입 정의 (`lib/types/tour.ts`, `lib/types/festival.ts`)
-- [ ] 레이아웃 구조 업데이트 (`app/layout.tsx`)
-- [ ] 공통 컴포넌트 (로딩, 에러 처리)
+- [x] 프로젝트 셋업
+- [x] API 클라이언트 구현 (`app/api/tour/route.ts`)
+- [x] 기본 타입 정의 (`lib/types/tour.ts`)
+  - [x] `TourItem` (목록용)
+  - [x] `TourDetail` (상세 페이지 기본정보)
+  - [x] `TourIntro` (운영정보)
+  - [x] `TourImage` (이미지 갤러리)
+  - [x] `AreaCode` (지역코드)
+  - [x] `ContentTypeId` 상수 및 타입 정의
+  - [x] `ApiResponse` 래퍼 타입
+  - [x] `Coordinate` 좌표 변환 타입
+  - [ ] `lib/types/festival.ts` (향후 확장용, 현재는 tour.ts의 CONTENT_TYPE.FESTIVAL 사용)
+- [x] 레이아웃 구조 업데이트 (`app/layout.tsx`)
+- [x] 공통 컴포넌트 (로딩, 에러 처리)
+  - [x] `components/loading-page.tsx`
+  - [x] `components/error-boundary.tsx`
+  - [x] `components/error-message.tsx`
 - [ ] 가이드라인 준수 체크리스트
   - [ ] 컴포넌트 네이밍 규칙 준수 (PascalCase, 도메인+역할+변형)
   - [ ] Export 규칙 준수 (단일 컴포넌트는 default, 다중은 named)
@@ -29,8 +52,9 @@
 
 ### 2.1 페이지 기본 구조
 
-- [ ] `app/page.tsx` 생성 (빈 레이아웃)
-- [ ] 기본 UI 구조 확인 (헤더, 메인 영역, 푸터)
+- [x] `app/page.tsx` 생성 (현재 템플릿 페이지로 존재)
+- [ ] My Trip 홈페이지로 전환 (관광지 목록 페이지)
+- [x] 기본 UI 구조 확인 (헤더: Navbar, 메인 영역, 푸터: 없음)
 
 ### 2.2 관광지 목록 기능 (MVP 2.1)
 
@@ -134,7 +158,7 @@
 - [x] `users` 테이블 생성 (Clerk 연동) (완료)
 - [x] `bookmarks` 테이블 생성 (완료)
 - [x] RLS 비활성화 (개발 환경) (완료)
-- [ ] 마이그레이션 적용 확인
+- [ ] 마이그레이션 적용 확인 (Supabase 프로젝트에서 실행 필요)
 
 ### 4.2 북마크 기능 구현
 
@@ -156,14 +180,19 @@
 
 ## Phase 5: 최적화 & 배포
 
-- [ ] 이미지 최적화 (`next.config.ts` 외부 도메인 설정)
-  - [ ] Next.js `Image` 컴포넌트 사용 (일반 `img` 태그 금지)
+- [x] 이미지 최적화 (`next.config.ts` 외부 도메인 설정)
+  - [x] 한국관광공사 API 이미지 도메인 추가 (`api.cdn.visitkorea.or.kr`, `tong.visitkorea.or.kr`)
+  - [ ] Next.js `Image` 컴포넌트 사용 (일반 `img` 태그 금지) - 구현 시 적용
   - [ ] 배경 이미지 처리 패턴 적용 (Image 컴포넌트 + 오버레이)
 - [ ] 전역 에러 핸들링 개선
-- [ ] 404 페이지 (`app/not-found.tsx`)
+- [x] 404 페이지 (`app/not-found.tsx`)
 - [ ] SEO 최적화 (메타태그, sitemap, robots.txt)
+  - [x] 기본 메타데이터 (`app/layout.tsx`)
+  - [ ] 동적 메타데이터 (상세페이지 `generateMetadata`)
 - [ ] 성능 측정 (Lighthouse 점수 > 80)
-- [ ] 환경변수 보안 검증
+- [ ] 환경변수 보안 검증 (TOUR_API_KEY 확인)
+  - [x] API 클라이언트에서 환경변수 처리 구현
+  - [ ] 환경변수 설정 가이드 확인 (`docs/env-setup.md`)
 - [ ] Vercel 배포 및 테스트
 - [ ] 최종 가이드라인 준수 체크리스트
   - [ ] 불필요한 추상화가 없는가?

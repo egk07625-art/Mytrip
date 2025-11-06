@@ -1,0 +1,17 @@
+chore: update project structure and add Phase 1 components
+
+- Update app/layout.tsx with improved structure
+- Add API route for tour data (app/api/tour/route.ts)
+- Add TypeScript types for tour data (lib/types/tour.ts)
+- Add common components:
+  - loading-page.tsx
+  - error-boundary.tsx
+  - error-message.tsx
+  - UI components: loading-spinner, skeleton
+- Add 404 page (app/not-found.tsx)
+- Update next.config.ts with image domain configuration
+- Update TODO.md with Phase 1 completion status
+- Add documentation files:
+  - design/DESIGN.md
+  - env-setup.md
+  - component verification reports
