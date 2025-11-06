@@ -25,6 +25,9 @@ import TourList from "@/components/tour-list";
 import ErrorMessage from "@/components/error-message";
 import type { TourItem, ApiResponse } from "@/lib/types/tour";
 
+// 빌드 타임에 API 호출을 방지하고 런타임에만 실행되도록 설정
+export const dynamic = 'force-dynamic';
+
 /**
  * 관광지 목록을 가져오는 함수
  * @param areaCode - 지역코드 (기본값: "1" - 서울)
