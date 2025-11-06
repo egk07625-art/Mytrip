@@ -97,11 +97,56 @@
 
 ### 2.4 검색 기능 추가 (MVP 2.3)
 
-- [ ] `components/tour-search.tsx` (검색창 UI)
-- [ ] 검색 API 연동 (`searchKeyword2`)
-- [ ] 검색 결과 표시
-- [ ] 검색 + 필터 조합 동작
-- [ ] 페이지 확인 및 UX 개선
+#### 2.4.1 검색창 UI 컴포넌트 구현
+
+- [ ] `components/tour-search.tsx` 생성
+  - [ ] shadcn/ui Input 컴포넌트 사용
+  - [ ] Search 아이콘 추가 (lucide-react)
+  - [ ] 엔터 키 이벤트 처리
+  - [ ] 검색 버튼 클릭 이벤트 처리
+  - [ ] URL 파라미터 업데이트 로직
+  - [ ] Spacing-First 정책 준수
+  - [ ] 반응형 디자인 (모바일/데스크톱)
+  - [ ] 다크 모드 지원
+  - [ ] 접근성 (ARIA 라벨)
+
+#### 2.4.2 검색 API 연동
+
+- [ ] `app/page.tsx`에 `fetchTourSearch` 함수 추가
+- [ ] `searchParams`에서 `keyword` 파라미터 읽기
+- [ ] API 엔드포인트 호출 (`/api/tour?endpoint=searchKeyword`)
+- [ ] URL 파라미터 처리 (keyword, areaCode, contentTypeId)
+- [ ] 에러 처리 및 로깅
+- [ ] 검색 결과 타입 정의 (`TourItem[]`)
+- [ ] `page.tsx`에서 검색/목록 로직 분기
+
+#### 2.4.3 검색 결과 표시
+
+- [ ] 검색 결과를 `TourList` 컴포넌트에 전달
+- [ ] 검색 결과 개수 표시 UI
+- [ ] 빈 결과 처리 메시지
+- [ ] 검색 중 로딩 상태 표시
+- [ ] 에러 메시지 표시
+
+#### 2.4.4 검색 + 필터 조합 동작
+
+- [ ] `TourSearch` 컴포넌트에서 필터 파라미터 유지 로직
+- [ ] `TourFilters` 컴포넌트에서 검색 키워드 유지 로직
+- [ ] `fetchTourSearch`에 필터 파라미터 전달
+- [ ] 검색 + 필터 조합 테스트
+- [ ] URL 파라미터 동기화 확인
+
+#### 2.4.5 UX 개선 및 테스트
+
+- [ ] 로딩 스피너 추가
+- [ ] 검색 버튼 비활성화 로직 (중복 요청 방지)
+- [ ] 검색어 유효성 검사 (최소 2자)
+- [ ] 에러 메시지 개선
+- [ ] 모바일/데스크톱 반응형 테스트
+- [ ] 다크 모드 테스트
+- [ ] 접근성 테스트
+
+**참고 문서**: `docs/plan-search-feature.md` - 상세 구현 계획
 
 ### 2.5 지도 연동 (MVP 2.2)
 
