@@ -29,7 +29,8 @@ function getTourApiKey(): string {
     throw new Error("TOUR_API_KEY 또는 NEXT_PUBLIC_TOUR_API_KEY가 설정되지 않았습니다.");
   }
 
-  return apiKey;
+  // 공백 제거 (환경변수에 공백이 포함될 수 있음)
+  return apiKey.trim();
 }
 
 /**
@@ -54,7 +55,7 @@ const ENDPOINT_CONFIG = {
   },
   areaBasedList: {
     path: "/areaBasedList2",
-    requiredParams: ["serviceKey", "MobileOS", "MobileApp", "areaCode"],
+    requiredParams: ["serviceKey", "MobileOS", "MobileApp", "areaCode", "contentTypeId"],
   },
   searchKeyword: {
     path: "/searchKeyword2",
@@ -104,14 +105,18 @@ export async function GET(request: NextRequest) {
     const config = ENDPOINT_CONFIG[endpoint];
     const commonParams = getCommonParams();
 
-    // 쿼리 파라미터 수집
+    // 쿼리 파라미터 수집 (공통 파라미터 먼저 추가)
     const apiParams = new URLSearchParams({
       ...commonParams,
     });
 
-    // 필수 파라미터 검증 및 추가
+    // 필수 파라미터 검증 및 추가 (commonParams에 포함된 것은 제외)
+    const commonParamKeys = Object.keys(commonParams);
     for (const param of config.requiredParams) {
-      if (param === "serviceKey") continue; // 이미 commonParams에 포함
+      // commonParams에 이미 포함된 파라미터는 건너뛰기
+      if (commonParamKeys.includes(param)) {
+        continue;
+      }
 
       const value = searchParams.get(param);
       if (!value) {
@@ -137,11 +142,19 @@ export async function GET(request: NextRequest) {
     }
 
     // API 호출
+    // 공공데이터포털 API는 serviceKey를 URL 인코딩해서 전달해야 함
+    // URLSearchParams가 자동으로 인코딩하지만, 일부 특수문자 처리 확인
     const apiUrl = `${TOUR_API_BASE_URL}${config.path}?${apiParams.toString()}`;
 
     console.group(`[Tour API] ${endpoint}`);
-    console.log("URL:", apiUrl.replace(getTourApiKey(), "***"));
-    console.log("Params:", Object.fromEntries(apiParams));
+    console.log("URL (masked):", apiUrl.replace(getTourApiKey(), "***"));
+    console.log("Params (masked):", Object.fromEntries(
+      Array.from(apiParams.entries()).map(([key, value]) => 
+        [key, key === 'serviceKey' ? '***' : value]
+      )
+    ));
+    console.log("API Key exists:", !!getTourApiKey());
+    console.log("API Key length:", getTourApiKey().length);
 
     const response = await fetch(apiUrl, {
       method: "GET",
@@ -156,13 +169,29 @@ export async function GET(request: NextRequest) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error("API Error:", response.status, errorText);
+      console.error("Request URL (masked):", apiUrl.replace(getTourApiKey(), "***"));
+      console.error("API Key exists:", !!getTourApiKey());
+      console.error("API Key length:", getTourApiKey().length);
       console.groupEnd();
+
+      // 401 에러인 경우 더 자세한 정보 제공
+      if (response.status === 401) {
+        return NextResponse.json(
+          {
+            error: "Authentication failed",
+            message: "API 키가 유효하지 않거나 인증에 실패했습니다. 환경변수 TOUR_API_KEY 또는 NEXT_PUBLIC_TOUR_API_KEY를 확인해주세요.",
+            status: response.status,
+            details: errorText.substring(0, 500), // 에러 메시지 처음 500자만
+          },
+          { status: response.status }
+        );
+      }
 
       return NextResponse.json(
         {
           error: "Tour API request failed",
           message: `API 요청 실패: ${response.status} ${response.statusText}`,
-          details: errorText,
+          details: errorText.substring(0, 500),
         },
         { status: response.status }
       );

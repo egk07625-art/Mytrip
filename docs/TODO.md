@@ -41,35 +41,52 @@
   - [x] `components/loading-page.tsx`
   - [x] `components/error-boundary.tsx`
   - [x] `components/error-message.tsx`
-- [ ] 가이드라인 준수 체크리스트
-  - [ ] 컴포넌트 네이밍 규칙 준수 (PascalCase, 도메인+역할+변형)
-  - [ ] Export 규칙 준수 (단일 컴포넌트는 default, 다중은 named)
-  - [ ] Spacing-First 정책 준수 (gap 우선, margin 금지)
-  - [ ] Tailwind CSS 우선 사용 (인라인 style 금지)
-  - [ ] 불필요한 추상화 금지 체크
+- [x] 가이드라인 준수 체크리스트
+  - [x] 검증 스크립트 작성 (`scripts/verify-guidelines.ts`)
+  - [x] npm 스크립트 추가 (`pnpm verify:guidelines`)
+  - [x] 컴포넌트 네이밍 규칙 준수 (PascalCase, 도메인+역할+변형)
+  - [x] Export 규칙 준수 (단일 컴포넌트는 default, 다중은 named)
+  - [x] Spacing-First 정책 준수 (gap 우선, margin 금지) - Navbar.tsx 수정 완료
+  - [x] Tailwind CSS 우선 사용 (인라인 style 금지)
+  - [x] 불필요한 추상화 금지 체크
+  - [x] 문서 파일 생성 완료 (`docs/component-verification-report.md`, `docs/design/DESIGN.md`, `docs/env-setup.md`)
+  - [ ] 테스트 페이지 margin 수정 (auth-test, storage-test) - 선택 사항
 
 ## Phase 2: 홈페이지 (`/`) - 관광지 목록
 
 ### 2.1 페이지 기본 구조
 
 - [x] `app/page.tsx` 생성 (현재 템플릿 페이지로 존재)
-- [ ] My Trip 홈페이지로 전환 (관광지 목록 페이지)
+- [x] My Trip 홈페이지로 전환 (관광지 목록 페이지) - 기본 레이아웃 구조 완료
+  - [x] 페이지 제목 영역
+  - [x] 필터/컨트롤 영역 (플레이스홀더)
+  - [x] 메인 콘텐츠 영역 (리스트 + 지도 레이아웃)
 - [x] 기본 UI 구조 확인 (헤더: Navbar, 메인 영역, 푸터: 없음)
 
 ### 2.2 관광지 목록 기능 (MVP 2.1)
 
-- [ ] `components/tour-card.tsx` (관광지 카드 - 기본 정보만)
-  - [ ] 네이밍 규칙 준수 (`TourCard` PascalCase)
-  - [ ] Spacing-First 정책 적용 (padding + gap)
-  - [ ] Tailwind CSS 사용 (인라인 style 금지)
-- [ ] `components/tour-list.tsx` (목록 표시 - 하드코딩 데이터로 테스트)
-  - [ ] 불필요한 래퍼 컴포넌트 없는지 확인
-- [ ] API 연동하여 실제 데이터 표시
-- [ ] 페이지 확인 및 스타일링 조정
-- [ ] 코드 품질 체크
-  - [ ] TypeScript 타입 정의 완료
-  - [ ] ESLint 규칙 준수
-  - [ ] 반응형 디자인 검증
+- [x] `components/tour-card.tsx` (관광지 카드 - 기본 정보만)
+  - [x] 네이밍 규칙 준수 (`TourCard` PascalCase)
+  - [x] Spacing-First 정책 적용 (padding + gap)
+  - [x] Tailwind CSS 사용 (인라인 style 금지)
+  - [x] Next.js Image 컴포넌트 사용
+  - [x] 반응형 디자인 및 다크 모드 지원
+  - [x] 접근성 개선 (ARIA, alt 텍스트)
+- [x] `components/tour-list.tsx` (목록 표시)
+  - [x] 불필요한 래퍼 컴포넌트 없는지 확인
+  - [x] 그리드 레이아웃으로 카드 배치
+  - [x] 빈 상태 처리
+- [x] API 연동하여 실제 데이터 표시
+  - [x] `areaBasedList2` API 연동
+  - [x] `contentTypeId` 필수 파라미터 추가
+  - [x] API 에러 처리 개선
+- [x] 페이지 확인 및 스타일링 조정
+  - [x] 레이아웃 비율 조정 (지도 구현 전까지 전체 너비 사용)
+  - [x] Navbar 프로필 위치 수정 (우측 정렬)
+- [x] 코드 품질 체크
+  - [x] TypeScript 타입 정의 완료
+  - [x] ESLint 규칙 준수
+  - [x] 반응형 디자인 검증
 
 ### 2.3 필터 기능 추가
 
@@ -192,7 +209,7 @@
 - [ ] 성능 측정 (Lighthouse 점수 > 80)
 - [ ] 환경변수 보안 검증 (TOUR_API_KEY 확인)
   - [x] API 클라이언트에서 환경변수 처리 구현
-  - [ ] 환경변수 설정 가이드 확인 (`docs/env-setup.md`)
+  - [x] 환경변수 설정 가이드 작성 (`docs/env-setup.md`)
 - [ ] Vercel 배포 및 테스트
 - [ ] 최종 가이드라인 준수 체크리스트
   - [ ] 불필요한 추상화가 없는가?
