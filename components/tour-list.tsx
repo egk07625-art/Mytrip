@@ -39,6 +39,10 @@ interface TourListProps {
    * 검색 결과가 없을 때 메시지를 구분하기 위해 사용
    */
   searchKeyword?: string;
+  /**
+   * 관광지 클릭 핸들러 (리스트-지도 연동용)
+   */
+  onTourClick?: (tourId: string) => void;
   className?: string;
 }
 
@@ -48,7 +52,7 @@ interface TourListProps {
  * @param searchKeyword - 검색 키워드 (선택적)
  * @param className - 추가 CSS 클래스
  */
-export default function TourList({ tours, searchKeyword, className }: TourListProps) {
+export default function TourList({ tours, searchKeyword, onTourClick, className }: TourListProps) {
   // 빈 상태 처리
   if (tours.length === 0) {
     // 검색 결과가 없을 때
@@ -81,7 +85,11 @@ export default function TourList({ tours, searchKeyword, className }: TourListPr
   return (
     <div className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-5 lg:gap-6 ${className || ""}`}>
       {tours.map((tour) => (
-        <TourCard key={tour.contentid} tour={tour} />
+        <TourCard 
+          key={tour.contentid} 
+          tour={tour} 
+          onClick={() => onTourClick?.(tour.contentid)}
+        />
       ))}
     </div>
   );

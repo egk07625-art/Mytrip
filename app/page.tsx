@@ -33,12 +33,11 @@
  * - @/lib/types/tour: TourItem, AreaCode 타입
  */
 
-import TourListWrapper from "@/components/tour-list-wrapper";
 import TourFilters from "@/components/tour-filters";
 import TourSearch from "@/components/tour-search";
 import TourSort from "@/components/tour-sort";
-import TourPagination from "@/components/tour-pagination";
 import ErrorMessageWithRetry from "@/components/error-message-with-retry";
+import TourListMapContainer from "@/components/tour-list-map-container";
 import { fetchAreaCodes } from "@/lib/api/tour-api-client";
 import type {
   TourItem,
@@ -460,19 +459,23 @@ export default async function Home({ searchParams }: HomeProps) {
             {/* 검색 영역 */}
             <TourSearch />
             {/* 필터 영역 */}
-            <TourFilters areaCodes={areaCodes} />
-            {/* 정렬 영역 */}
-            <div className="self-end">
-              <TourSort />
+            <div className="flex flex-col lg:flex-row lg:items-start gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+              <div className="flex-1">
+                <TourFilters areaCodes={areaCodes} />
+              </div>
+              {/* 정렬 영역 */}
+              <div className="flex-shrink-0 lg:pt-8">
+                <TourSort />
+              </div>
             </div>
           </div>
         </section>
 
-        {/* 메인 콘텐츠 영역: 리스트 (지도는 Phase 2.5에서 구현 예정) */}
+        {/* 메인 콘텐츠 영역: 리스트 + 지도 분할 레이아웃 */}
         <section>
           {/* 검색 결과 개수 표시 헤더 (검색어가 있을 때만) */}
           {keyword && !error && (
-            <div className="flex flex-col gap-2 pb-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex flex-col gap-2 pb-4 mb-6 border-b border-gray-200 dark:border-gray-700">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                 검색 결과
               </h2>
@@ -518,23 +521,17 @@ export default async function Home({ searchParams }: HomeProps) {
             </div>
           )}
 
-          {/* 리스트 영역 (지도 구현 전까지 전체 너비 사용) */}
+          {/* 에러 상태 */}
           {error ? (
             <ErrorMessageWithRetry message={error} type="api" />
           ) : (
-            <>
-              <TourListWrapper
-                tours={sortedTours}
-                error={error}
-                searchKeyword={keyword}
-              />
-              {/* 페이지네이션 */}
-              {!error && totalPages > 1 && (
-                <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
-                  <TourPagination currentPage={page} totalPages={totalPages} />
-                </div>
-              )}
-            </>
+            <TourListMapContainer
+              tours={sortedTours}
+              error={error}
+              searchKeyword={keyword}
+              currentPage={page}
+              totalPages={totalPages}
+            />
           )}
         </section>
       </div>

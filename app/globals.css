@@ -41,6 +41,23 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  
+  /* DESIGN.md 디자인 시스템 컬러 팔레트 */
+  --color-primary-blue: #2B7DE9;
+  --color-primary-teal: #00BFA6;
+  --color-accent-orange: #FF6B35;
+  --color-success: #28A745;
+  --color-warning: #FFC107;
+  --color-error: #DC3545;
+  --color-info: #17A2B8;
+  --color-surface-light: #F8F9FA;
+  --color-surface-dark: #2D2D2D;
+  --color-text-primary-light: #212529;
+  --color-text-primary-dark: #F8F9FA;
+  --color-text-secondary-light: #6C757D;
+  --color-text-secondary-dark: #ADB5BD;
+  --color-border-light: #DEE2E6;
+  --color-border-dark: #495057;
 }
 
 :root {
@@ -76,6 +93,19 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  
+  /* DESIGN.md 디자인 시스템 - Light Mode */
+  --design-primary-blue: #2B7DE9;
+  --design-primary-teal: #00BFA6;
+  --design-accent-orange: #FF6B35;
+  --design-success: #28A745;
+  --design-warning: #FFC107;
+  --design-error: #DC3545;
+  --design-info: #17A2B8;
+  --design-surface: #F8F9FA;
+  --design-text-primary: #212529;
+  --design-text-secondary: #6C757D;
+  --design-border: #DEE2E6;
 }
 
 .dark {
@@ -110,6 +140,19 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  
+  /* DESIGN.md 디자인 시스템 - Dark Mode */
+  --design-primary-blue: #2B7DE9;
+  --design-primary-teal: #00BFA6;
+  --design-accent-orange: #FF6B35;
+  --design-success: #28A745;
+  --design-warning: #FFC107;
+  --design-error: #DC3545;
+  --design-info: #17A2B8;
+  --design-surface: #2D2D2D;
+  --design-text-primary: #F8F9FA;
+  --design-text-secondary: #ADB5BD;
+  --design-border: #495057;
 }
 
 @layer base {
@@ -118,8 +161,37 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans), 'Pretendard', 'Noto Sans KR', 'Inter', 'Helvetica Neue', sans-serif;
   }
   main {
     @apply max-w-7xl mx-auto pt-16 px-4;
+  }
+  
+  /* DESIGN.md 타이포그래피 스케일 */
+  h1 {
+    @apply text-4xl font-bold;
+  }
+  h2 {
+    @apply text-3xl font-semibold;
+  }
+  h3 {
+    @apply text-2xl font-semibold;
+  }
+  h4 {
+    @apply text-xl font-medium;
+  }
+  h5 {
+    @apply text-lg font-medium;
+  }
+  h6 {
+    @apply text-base font-medium;
+  }
+  
+  /* DESIGN.md 인터랙션 및 애니메이션 */
+  a {
+    @apply transition-colors duration-200;
+  }
+  a:hover {
+    @apply text-blue-600 dark:text-blue-400;
   }
 }

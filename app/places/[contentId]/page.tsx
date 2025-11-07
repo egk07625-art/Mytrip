@@ -46,13 +46,18 @@ import BackButton from "@/components/back-button";
 import DetailInfo from "@/components/tour-detail/detail-info";
 import DetailIntro from "@/components/tour-detail/detail-intro";
 import DetailGallery from "@/components/tour-detail/detail-gallery";
+import DetailHero from "@/components/tour-detail/detail-hero";
+import DetailQuickInfo from "@/components/tour-detail/detail-quick-info";
+import DetailMap from "@/components/tour-detail/detail-map";
 import ShareButton from "@/components/tour-detail/share-button";
 import BookmarkButton from "@/components/bookmarks/bookmark-button";
 import ErrorMessageWithRetry from "@/components/error-message-with-retry";
 import {
   fetchTourDetail,
   fetchTourImages,
+  fetchTourIntro,
 } from "@/lib/api/tour-api-client";
+import { CONTENT_TYPE_LABEL } from "@/lib/types/tour";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface PlaceDetailPageProps {
@@ -259,6 +264,66 @@ function DetailGallerySkeleton() {
 }
 
 /**
+ * 지도 로딩 스켈레톤 컴포넌트
+ */
+function MapLoadingSkeleton() {
+  return (
+    <div
+      className="flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 animate-pulse"
+      style={{ minHeight: "400px" }}
+      role="status"
+      aria-label="지도 로딩 중"
+    >
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          지도를 불러오는 중...
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * 제목 및 액션 버튼 콘텐츠 컴포넌트
+ */
+async function TitleContent({ contentId }: { contentId: string }) {
+  const tourDetail = await fetchTourDetail(contentId);
+  if (!tourDetail) {
+    return null;
+  }
+
+  const contentTypeLabel =
+    CONTENT_TYPE_LABEL[
+      tourDetail.contenttypeid as keyof typeof CONTENT_TYPE_LABEL
+    ] || "기타";
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+          {tourDetail.title}
+        </h1>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+            🎯 {contentTypeLabel}
+          </span>
+          {tourDetail.addr1 && (
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              📍 {tourDetail.addr1.split(" ").slice(0, 2).join(" ")}
+            </span>
+          )}
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <BookmarkButton contentId={contentId} />
+        <ShareButton />
+      </div>
+    </div>
+  );
+}
+
+/**
  * 상세 정보 콘텐츠 컴포넌트 (Suspense 경계 내부)
  */
 async function DetailContent({ contentId }: { contentId: string }) {
@@ -314,6 +379,32 @@ async function IntroContentWrapper({ contentId }: { contentId: string }) {
 }
 
 /**
+ * 히어로 섹션 콘텐츠 컴포넌트 (Suspense 경계 내부)
+ */
+async function HeroContent({ contentId }: { contentId: string }) {
+  const [tourDetail, images] = await Promise.all([
+    fetchTourDetail(contentId),
+    fetchTourImages(contentId),
+  ]);
+  if (!tourDetail) {
+    return null;
+  }
+  return <DetailHero tourDetail={tourDetail} images={images} />;
+}
+
+/**
+ * 빠른 정보 콘텐츠 컴포넌트 (Suspense 경계 내부)
+ */
+async function QuickInfoContent({ contentId }: { contentId: string }) {
+  const tourDetail = await fetchTourDetail(contentId);
+  if (!tourDetail || !tourDetail.contenttypeid) {
+    return null;
+  }
+  const tourIntro = await fetchTourIntro(contentId, tourDetail.contenttypeid);
+  return <DetailQuickInfo tourIntro={tourIntro} />;
+}
+
+/**
  * 이미지 갤러리 콘텐츠 컴포넌트 (Suspense 경계 내부)
  */
 async function GalleryContent({ contentId }: { contentId: string }) {
@@ -326,6 +417,42 @@ async function GalleryContent({ contentId }: { contentId: string }) {
   console.groupEnd();
 
   return <DetailGallery images={images} />;
+}
+
+/**
+ * 지도 콘텐츠 컴포넌트 (Suspense 경계 내부)
+ */
+async function MapContent({ contentId }: { contentId: string }) {
+  console.group("[PlaceDetail] Fetching tour detail for map");
+  console.log("Content ID:", contentId);
+
+  const tourDetail = await fetchTourDetail(contentId);
+
+  if (!tourDetail) {
+    console.error("[PlaceDetail] Tour detail not found for map");
+    console.groupEnd();
+    return (
+      <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+        style={{ minHeight: "400px" }}>
+        <div className="flex flex-col items-center gap-4 p-8 text-center max-w-md">
+          <div className="text-6xl">⚠️</div>
+          <div className="flex flex-col gap-2">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              지도를 불러올 수 없습니다
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              관광지 정보를 불러올 수 없습니다.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  console.log("[PlaceDetail] Tour detail loaded for map:", tourDetail.title);
+  console.groupEnd();
+
+  return <DetailMap tourDetail={tourDetail} />;
 }
 
 export default async function PlaceDetailPage({
@@ -351,7 +478,7 @@ export default async function PlaceDetailPage({
     return (
       <main className="min-h-[calc(100vh-80px)]">
         {/* 헤더 영역: 뒤로가기 버튼 + 페이지 제목 + 북마크 버튼 + 공유 버튼 */}
-        <header className="w-full border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+        <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95">
           <div className="w-full max-w-7xl mx-auto flex items-center justify-between gap-4 px-4 py-4">
             <div className="flex items-center gap-4">
               <BackButton />
@@ -368,28 +495,54 @@ export default async function PlaceDetailPage({
 
         {/* 메인 콘텐츠 영역 */}
         <div className="w-full max-w-7xl mx-auto px-4 py-8">
-          <div className="flex flex-col gap-8">
-            {/* 기본 정보 섹션 */}
+          {/* 히어로 이미지 섹션 */}
+          <section className="mb-8">
             <Suspense fallback={<DetailInfoSkeleton />}>
-              <DetailContent contentId={contentId} />
+              <HeroContent contentId={contentId} />
             </Suspense>
+          </section>
 
-            {/* 운영 정보 섹션 - tourDetail에서 contentTypeId 가져오기 */}
-            <Suspense fallback={<DetailIntroSkeleton />}>
-              <IntroContentWrapper contentId={contentId} />
+          {/* 제목 및 액션 버튼 */}
+          <section className="mb-8">
+            <Suspense fallback={<DetailInfoSkeleton />}>
+              <TitleContent contentId={contentId} />
             </Suspense>
+          </section>
 
-            {/* 이미지 갤러리 섹션 */}
-            <Suspense fallback={<DetailGallerySkeleton />}>
-              <GalleryContent contentId={contentId} />
-            </Suspense>
+          {/* 좌우 분할 레이아웃 (데스크톱) / 단일 컬럼 (모바일) */}
+          <div className="grid grid-cols-1 lg:grid-cols-[60%_40%] gap-8">
+            {/* 좌측: 기본 정보, 개요, 운영 정보 */}
+            <div className="flex flex-col gap-8">
+              {/* 기본 정보 섹션 (이미지 제외) */}
+              <Suspense fallback={<DetailInfoSkeleton />}>
+                <DetailContent contentId={contentId} />
+              </Suspense>
 
-            {/* 향후 추가될 섹션들 */}
-            {/* 
-            <section>
-              <DetailMap contentId={contentId} />
-            </section>
-            */}
+              {/* 운영 정보 섹션 */}
+              <Suspense fallback={<DetailIntroSkeleton />}>
+                <IntroContentWrapper contentId={contentId} />
+              </Suspense>
+
+              {/* 이미지 갤러리 섹션 */}
+              <Suspense fallback={<DetailGallerySkeleton />}>
+                <GalleryContent contentId={contentId} />
+              </Suspense>
+            </div>
+
+            {/* 우측: 지도, 빠른 정보 카드 */}
+            <div className="flex flex-col gap-6">
+              {/* 빠른 정보 카드 */}
+              <Suspense fallback={<DetailIntroSkeleton />}>
+                <QuickInfoContent contentId={contentId} />
+              </Suspense>
+
+              {/* 지도 섹션 */}
+              <div className="sticky top-24">
+                <Suspense fallback={<MapLoadingSkeleton />}>
+                  <MapContent contentId={contentId} />
+                </Suspense>
+              </div>
+            </div>
           </div>
         </div>
       </main>

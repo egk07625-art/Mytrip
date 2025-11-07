@@ -36,7 +36,7 @@ import { useState, useMemo, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import { useClerkSupabaseClient } from "@/lib/supabase/clerk-client";
-import { Trash2, Star, AlertCircle } from "lucide-react";
+import { Trash2, Star, AlertCircle, ArrowRight } from "lucide-react";
 import TourCard from "@/components/tour-card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -416,11 +416,11 @@ export default function BookmarkList({
           <div className="h-8 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
           <div className="h-8 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
         </div>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
-              className="h-52 w-full animate-pulse rounded-xl bg-gray-200 dark:bg-gray-700"
+              className="h-64 w-full animate-pulse rounded-xl bg-gray-200 dark:bg-gray-700"
             />
           ))}
         </div>
@@ -431,16 +431,24 @@ export default function BookmarkList({
   // 빈 상태
   if (bookmarks.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
-        <Star className="w-12 h-12 text-gray-400 dark:text-gray-500" />
-        <div className="flex flex-col gap-1.5">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            북마크가 없습니다
+      <div className="flex flex-col items-center justify-center gap-6 py-16 px-4 text-center">
+        <div className="text-6xl">⭐</div>
+        <div className="flex flex-col gap-3">
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+            아직 북마크한 관광지가 없습니다
           </h2>
-          <p className="text-xs text-gray-600 dark:text-gray-400">
+          <p className="text-base text-gray-600 dark:text-gray-400">
             관광지를 북마크하여 나중에 다시 확인하세요.
           </p>
         </div>
+        <Button
+          onClick={() => router.push("/")}
+          className="gap-2"
+          aria-label="관광지 둘러보기"
+        >
+          관광지 둘러보기
+          <ArrowRight className="w-4 h-4" />
+        </Button>
       </div>
     );
   }
@@ -465,7 +473,7 @@ export default function BookmarkList({
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-6">
       {/* 컨트롤 바 */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {/* 정렬 옵션 */}
@@ -501,7 +509,7 @@ export default function BookmarkList({
       </div>
 
       {/* 북마크 목록 */}
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {validBookmarks.map((item) => {
           const tourItem = tourDetailToTourItem(item.tour!);
           const isSelected = selectedIds.has(item.bookmark.content_id);

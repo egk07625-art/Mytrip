@@ -39,6 +39,11 @@ import { CONTENT_TYPE_LABEL } from "@/lib/types/tour";
 
 interface TourCardProps {
   tour: TourItem;
+  /**
+   * 카드 클릭 핸들러 (리스트-지도 연동용)
+   * 기본 동작(상세페이지 이동) 전에 호출됩니다.
+   */
+  onClick?: () => void;
   className?: string;
 }
 
@@ -57,39 +62,47 @@ function isValidImageUrl(url?: string): boolean {
   return Boolean(url && url.trim().length > 0);
 }
 
-export default function TourCard({ tour, className }: TourCardProps) {
+export default function TourCard({ tour, onClick, className }: TourCardProps) {
   const imageUrl = tour.firstimage || tour.firstimage2;
   const hasImage = isValidImageUrl(imageUrl);
   const contentTypeLabel = getContentTypeLabel(tour.contenttypeid);
   const detailPageUrl = `/places/${tour.contentid}`;
 
+  const handleClick = () => {
+    // 리스트-지도 연동용 클릭 핸들러 호출
+    if (onClick) {
+      onClick();
+    }
+  };
+
   return (
     <Link
       href={detailPageUrl}
-      className={`block bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300 overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${className || ""}`}
+      onClick={handleClick}
+      className={`block bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg hover:scale-[1.01] transition-all duration-300 ease-out overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${className || ""}`}
       aria-label={`${tour.title} 관광지 상세보기`}
     >
       {/* 이미지 영역 */}
-      <div className="relative w-full aspect-video overflow-hidden bg-gray-100 dark:bg-gray-700">
+      <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-700">
         {hasImage && imageUrl ? (
           <Image
             src={imageUrl}
             alt={`${tour.title} 이미지`}
             fill
-            className="object-cover hover:scale-110 transition-transform duration-300"
-            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover hover:scale-105 transition-transform duration-500 ease-out"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-teal-100 dark:from-blue-900 dark:to-teal-900">
-            <MapPin className="w-12 h-12 text-gray-400 dark:text-gray-500" />
+            <MapPin className="w-10 h-10 text-gray-400 dark:text-gray-500" />
           </div>
         )}
       </div>
 
       {/* 정보 영역 */}
-      <div className="flex flex-col gap-2 p-3 md:p-5">
+      <div className="flex flex-col gap-2.5 p-4">
         {/* 관광지명 */}
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-2">
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-2 leading-snug">
           {tour.title}
         </h3>
 
@@ -105,8 +118,8 @@ export default function TourCard({ tour, className }: TourCardProps) {
 
           {/* 관광 타입 뱃지 */}
           <div className="flex items-center gap-1.5">
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-              {contentTypeLabel}
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+              🎯 {contentTypeLabel}
             </span>
           </div>
         </div>

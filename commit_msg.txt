@@ -1,30 +1,14 @@
-feat: implement bookmark feature with sorting and bulk delete
+feat: improve UI/UX for bookmarks page and navbar
 
-- Add bookmark functionality with Supabase integration
-  - Create bookmark-button component for detail pages
-  - Implement bookmark API client with DB and localStorage support
-  - Add bookmark types and interfaces
+- Reduce bookmark page element sizes by 20% for better space utilization
+  - Decrease font sizes, padding, and spacing throughout bookmark components
+  - Optimize tour card component for more compact display
+- Make navbar sticky on scroll for better navigation accessibility
+  - Add sticky positioning with backdrop blur effect
+  - Maintain navbar visibility across all pages
+- Integrate search functionality into navbar
+  - Add compact variant to TourSearch component for navbar usage
+  - Center search bar in navbar layout
+  - Remove duplicate search icons and increase search input width
+- Update bookmark list and tour card components for consistent sizing
 
-- Implement bookmark list page (/bookmarks)
-  - Server Component for authenticated users (DB query)
-  - Client Component for unauthenticated users (localStorage)
-  - Parallel tour detail fetching with Promise.allSettled
-  - Loading skeleton and error handling
-
-- Add sorting functionality
-  - Sort by latest (created_at desc)
-  - Sort by name (title asc, Korean alphabetical order)
-  - Sort by region (addr1 based)
-  - URL parameter support (?sort=latest|name|region)
-  - Client-side sorting implementation
-
-- Implement bulk delete feature
-  - Checkbox selection for multiple bookmarks
-  - Select all / Deselect all functionality
-  - Bulk delete with confirmation dialog
-  - Auto refresh after deletion
-
-- Add Supabase migration guide and status docs
-- Update navbar with bookmark link
-- Add checkbox UI component (shadcn/ui)
-- Update TODO.md with completed bookmark features

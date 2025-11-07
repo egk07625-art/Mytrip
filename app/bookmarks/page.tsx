@@ -136,26 +136,44 @@ export default async function BookmarksPage({
   console.groupEnd();
 
   return (
-    <div className="flex flex-col gap-5 p-3 md:p-5 lg:p-6">
-      {/* 페이지 제목 */}
-      <div className="flex flex-col gap-1.5">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          북마크
-        </h1>
-        <p className="text-xs text-gray-600 dark:text-gray-400">
-          저장한 관광지를 확인하고 관리하세요.
-        </p>
-      </div>
+    <main className="min-h-[calc(100vh-80px)]">
+      <div className="w-full max-w-7xl mx-auto px-4 py-8 lg:px-8 lg:py-12">
+        {/* 페이지 제목 및 컨트롤 영역 */}
+        <section className="flex flex-col gap-5 pb-10">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white tracking-tight">
+                내 북마크
+              </h1>
+              <span className="text-2xl lg:text-3xl" aria-hidden="true">
+                ⭐
+              </span>
+            </div>
+            <p className="text-base lg:text-lg text-gray-600 dark:text-gray-400">
+              저장한 관광지를 확인하고 관리하세요
+            </p>
+            {bookmarksWithTour.length > 0 && (
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 w-fit">
+                <span className="text-sm font-medium text-blue-900 dark:text-blue-200">
+                  총 <span className="font-bold">{bookmarksWithTour.length}</span>개의 북마크
+                </span>
+              </div>
+            )}
+          </div>
+        </section>
 
-      {/* 북마크 목록 */}
-      <Suspense fallback={<BookmarkListSkeleton />}>
-        <BookmarkList
-          bookmarks={bookmarksWithTour}
-          sortOption={sortOption}
-          isAuthenticated={!!userId}
-        />
-      </Suspense>
-    </div>
+        {/* 북마크 목록 */}
+        <section>
+          <Suspense fallback={<BookmarkListSkeleton />}>
+            <BookmarkList
+              bookmarks={bookmarksWithTour}
+              sortOption={sortOption}
+              isAuthenticated={!!userId}
+            />
+          </Suspense>
+        </section>
+      </div>
+    </main>
   );
 }
 

@@ -129,34 +129,6 @@ export default function DetailInfo({
     <section
       className={`flex flex-col gap-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 ${className || ""}`}
     >
-      {/* 관광지명 및 타입 뱃지 */}
-      <div className="flex flex-col gap-4 p-6">
-        <div className="flex flex-col gap-3">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
-            {tourDetail.title}
-          </h1>
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-              {contentTypeLabel}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* 대표 이미지 */}
-      {hasImage && imageUrl && (
-        <div className="relative w-full aspect-video overflow-hidden bg-gray-100 dark:bg-gray-700">
-          <Image
-            src={imageUrl}
-            alt={`${tourDetail.title} 대표 이미지`}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 90vw, 80vw"
-            priority
-          />
-        </div>
-      )}
-
       {/* 기본 정보 */}
       <div className="flex flex-col gap-4 p-6">
         {/* 주소 */}

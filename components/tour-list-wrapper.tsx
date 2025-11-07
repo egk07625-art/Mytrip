@@ -46,6 +46,10 @@ interface TourListWrapperProps {
    */
   searchKeyword?: string;
   /**
+   * 관광지 클릭 핸들러 (리스트-지도 연동용)
+   */
+  onTourClick?: (tourId: string) => void;
+  /**
    * 추가 CSS 클래스
    */
   className?: string;
@@ -63,6 +67,7 @@ export default function TourListWrapper({
   tours, 
   error, 
   searchKeyword,
+  onTourClick,
   className 
 }: TourListWrapperProps) {
   const searchParams = useSearchParams();
@@ -174,6 +179,6 @@ export default function TourListWrapper({
 
   // 데이터가 없으면 빈 상태 표시 (TourList에서 처리)
   // 데이터가 있으면 리스트 표시
-  return <TourList tours={tours} searchKeyword={searchKeyword} className={className} />;
+  return <TourList tours={tours} searchKeyword={searchKeyword} onTourClick={onTourClick} className={className} />;
 }
 

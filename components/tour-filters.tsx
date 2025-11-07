@@ -102,45 +102,38 @@ export default function TourFilters({ areaCodes, className }: TourFiltersProps) 
 
   return (
     <div
-      className={`flex flex-col gap-6 p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm ${className || ""}`}
+      className={`flex flex-col gap-4 ${className || ""}`}
       role="region"
       aria-label="관광지 필터"
     >
-      {/* 필터 헤더 */}
-      <div className="flex items-center justify-between gap-4">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-          필터
-        </h2>
-        {hasActiveFilters && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={resetFilters}
-            className="gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-            aria-label="모든 필터 초기화"
-            aria-describedby="filter-description"
-          >
-            <X className="size-4" aria-hidden="true" />
-            초기화
-          </Button>
-        )}
-      </div>
-
       {/* 필터 설명 (스크린 리더용) */}
       <div id="filter-description" className="sr-only">
         지역과 관광 타입을 선택하여 관광지 목록을 필터링할 수 있습니다.
       </div>
 
       {/* 지역 필터 */}
-      <div className="flex flex-col gap-3">
-        <label id="area-filter-label" htmlFor="area-filter-group" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          지역
-        </label>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-2">
+          <label id="area-filter-label" htmlFor="area-filter-group" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            📍 지역
+          </label>
+          {hasActiveFilters && currentAreaCode && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={resetFilters}
+              className="h-6 px-2 gap-1 text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              aria-label="필터 초기화"
+            >
+              <X className="size-3" aria-hidden="true" />
+            </Button>
+          )}
+        </div>
         <div
           id="area-filter-group"
           role="group"
           aria-labelledby="area-filter-label"
-          className="flex flex-wrap gap-2 sm:gap-3"
+          className="flex flex-wrap gap-2 overflow-x-auto pb-2"
         >
           <Button
             variant={currentAreaCode === "" ? "default" : "outline"}
@@ -168,19 +161,16 @@ export default function TourFilters({ areaCodes, className }: TourFiltersProps) 
         </div>
       </div>
 
-      {/* 구분선 */}
-      <div className="border-t border-gray-200 dark:border-gray-700" />
-
       {/* 관광 타입 필터 */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2">
         <label id="content-type-filter-label" htmlFor="content-type-filter-group" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          관광 타입
+          🎯 관광타입
         </label>
         <div
           id="content-type-filter-group"
           role="group"
           aria-labelledby="content-type-filter-label"
-          className="flex flex-wrap gap-2 sm:gap-3"
+          className="flex flex-wrap gap-2 overflow-x-auto pb-2"
         >
           {CONTENT_TYPE_OPTIONS.map((option) => (
             <Button

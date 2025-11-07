@@ -370,11 +370,17 @@
   - [x] 한국관광공사 API 이미지 도메인 추가 (`api.cdn.visitkorea.or.kr`, `tong.visitkorea.or.kr`)
   - [x] Next.js `Image` 컴포넌트 사용 (일반 `img` 태그 금지) - 구현 시 적용
   - [x] 배경 이미지 처리 패턴 적용 (Image 컴포넌트 + 오버레이)
-- [ ] 전역 에러 핸들링 개선
+- [x] 전역 에러 핸들링 개선
+  - [x] `app/error.tsx` (서버/클라이언트 에러 처리)
+  - [x] `app/global-error.tsx` (루트 레이아웃 에러 처리)
+  - [x] `components/error-boundary.tsx` (React Error Boundary)
+  - [x] `components/error-message.tsx` (에러 메시지 컴포넌트)
 - [x] 404 페이지 (`app/not-found.tsx`)
-- [ ] SEO 최적화 (메타태그, sitemap, robots.txt)
+- [x] SEO 최적화 (메타태그, sitemap, robots.txt)
   - [x] 기본 메타데이터 (`app/layout.tsx`)
   - [x] 동적 메타데이터 (상세페이지 `generateMetadata`)
+  - [x] 동적 sitemap 생성 (`app/sitemap.ts`)
+  - [x] 동적 robots.txt 생성 (`app/robots.ts`)
 - [ ] 성능 측정 (Lighthouse 점수 > 80)
   - [x] 성능 최적화 가이드 작성 (`docs/performance-optimization-guide.md`)
   - [x] 이미지 최적화 적용 확인 (Next.js Image 컴포넌트 사용)
