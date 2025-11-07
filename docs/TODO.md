@@ -364,19 +364,27 @@
 
 ## Phase 5: 최적화 & 배포
 
+> **상세 계획**: `docs/plan-phase5-optimization.md` 참고
+
 - [x] 이미지 최적화 (`next.config.ts` 외부 도메인 설정)
   - [x] 한국관광공사 API 이미지 도메인 추가 (`api.cdn.visitkorea.or.kr`, `tong.visitkorea.or.kr`)
-  - [ ] Next.js `Image` 컴포넌트 사용 (일반 `img` 태그 금지) - 구현 시 적용
-  - [ ] 배경 이미지 처리 패턴 적용 (Image 컴포넌트 + 오버레이)
+  - [x] Next.js `Image` 컴포넌트 사용 (일반 `img` 태그 금지) - 구현 시 적용
+  - [x] 배경 이미지 처리 패턴 적용 (Image 컴포넌트 + 오버레이)
 - [ ] 전역 에러 핸들링 개선
 - [x] 404 페이지 (`app/not-found.tsx`)
 - [ ] SEO 최적화 (메타태그, sitemap, robots.txt)
   - [x] 기본 메타데이터 (`app/layout.tsx`)
   - [x] 동적 메타데이터 (상세페이지 `generateMetadata`)
 - [ ] 성능 측정 (Lighthouse 점수 > 80)
+  - [x] 성능 최적화 가이드 작성 (`docs/performance-optimization-guide.md`)
+  - [x] 이미지 최적화 적용 확인 (Next.js Image 컴포넌트 사용)
+  - [x] 캐싱 전략 적용 확인 (revalidate: 3600)
+  - [ ] Lighthouse 측정 실행 (로컬 및 프로덕션)
 - [ ] 환경변수 보안 검증 (TOUR_API_KEY 확인)
   - [x] API 클라이언트에서 환경변수 처리 구현
   - [x] 환경변수 설정 가이드 작성 (`docs/env-setup.md`)
+  - [x] 환경변수 검증 스크립트 작성 (`scripts/verify-env.ts`)
+  - [x] npm 스크립트 추가 (`pnpm verify:env`)
 - [ ] Vercel 배포 및 테스트
   - [x] Server Component에서 내부 API 호출 시 baseUrl 결정 로직 개선
   - [x] Next.js 15 headers() API를 사용하여 동적 URL 결정
@@ -389,11 +397,15 @@
     - [x] `docs/vercel-env-build-time-fix.md`
     - [x] `docs/vercel-env-not-injected-fix.md`
 - [ ] 최종 가이드라인 준수 체크리스트
-  - [ ] 불필요한 추상화가 없는가?
-  - [ ] Export 규칙을 준수했는가?
-  - [ ] 네이밍 규칙을 따랐는가?
-  - [ ] Spacing-First 정책 준수 (gap 우선, margin 금지)
-  - [ ] Tailwind CSS 우선 사용
+  - [x] 가이드라인 검증 스크립트 작성 (`scripts/verify-guidelines.ts`)
+  - [x] npm 스크립트 추가 (`pnpm verify:guidelines`)
+  - [x] 통합 검증 스크립트 추가 (`pnpm verify:all`)
+  - [ ] 불필요한 추상화 검증 실행
+  - [ ] Export 규칙 검증 실행
+  - [ ] 네이밍 규칙 검증 실행
+  - [ ] Spacing-First 정책 검증 실행
+  - [ ] Tailwind CSS 사용 검증 실행
   - [x] Next.js 15 동적 라우트 파라미터 처리 (`await params`)
-  - [ ] TypeScript 타입 정의 완료
-  - [ ] 반응형 디자인 검증
+  - [x] TypeScript 타입 검증 스크립트 추가 (`pnpm type-check`)
+  - [ ] TypeScript 타입 검증 실행
+  - [ ] 반응형 디자인 검증 (수동 테스트)
