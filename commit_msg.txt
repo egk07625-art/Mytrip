@@ -1,17 +1,15 @@
-fix: resolve build errors for Vercel deployment
+﻿fix: Fix sitemap generation and improve domain configuration for Vercel deployment
 
-- Fix MapTypeId, Event, and LatLngBounds type errors in naver-map.tsx
-  - Use type assertions for MapTypeId and Event API access
-  - Fix LatLngBounds constructor type error
-- Remove unused imports and variables
-  - Remove MapLoadingSkeleton component
-  - Remove unused Image import from detail-info.tsx
-  - Remove unused router from tour-list-map-container.tsx
-  - Remove unused TourIntro import from detail-intro.tsx
-- Fix static generation errors in sitemap.ts and robots.ts
-  - Remove headers() usage for static generation compatibility
-  - Use environment variables instead of headers() for base URL
-  - Use default area codes instead of fetchAreaCodes() in sitemap
-- Add force-static export to not-found.tsx
-- Update useEffect dependencies in naver-map.tsx
-- Clean up .next folder and pnpm cache
+- Fix sitemap generation to call Korean Tourism API directly instead of internal API route (build-time issue)
+- Add detailed logging for base URL detection in sitemap.ts
+- Improve environment variable handling for NEXT_PUBLIC_APP_URL
+- Update documentation for Vercel environment variable setup
+- Add domain mismatch troubleshooting guide
+
+Changes:
+- app/sitemap.ts: Add fetchToursDirectly function to call API directly at build time
+- app/sitemap.ts: Add comprehensive logging for environment variable checks
+- app/layout.tsx: Improve Clerk environment variable debugging
+- docs/vercel-env-setup.md: Add NEXT_PUBLIC_APP_URL setup guide
+- docs/TROUBLESHOOTING.md: Add domain mismatch troubleshooting section
+- next.config.ts: Ensure NEXT_PUBLIC_APP_URL is included in env config

@@ -46,15 +46,40 @@ NEXT_PUBLIC_TOUR_API_KEY=your_tour_api_key_here
    - ✅ Development (개발 환경) - 선택 사항
 4. **Save** 클릭
 
-### 2. 추가 필수 환경변수
+### 2. 앱 URL 설정 (필수 - Sitemap 생성에 필요)
+
+Sitemap 생성 및 Server Component에서 내부 API 호출 시 baseUrl 결정을 위해 **반드시 설정**해야 합니다:
+
+```
+NEXT_PUBLIC_APP_URL=https://mytrip-eight.vercel.app
+```
+
+**중요 사항**: 
+- 마지막에 슬래시(`/`) 없이 입력 (코드에서 자동으로 제거되지만, 설정 시에도 슬래시 없이 입력 권장)
+- Vercel 자동 URL(`VERCEL_URL`)도 사용 가능하지만, 명시적으로 설정하는 것이 더 안정적입니다
+- 빌드 로그에서 `[Sitemap] Base URL:` 로그를 확인하여 올바르게 설정되었는지 확인 가능합니다
+
+**설정 방법**:
+1. Vercel 대시보드 → 프로젝트 → **Settings** → **Environment Variables**
+2. **Key**: `NEXT_PUBLIC_APP_URL`
+3. **Value**: `https://mytrip-eight.vercel.app` (슬래시 없이)
+4. **Environment**: Production, Preview, Development 모두 선택
+5. **Save** 클릭 후 재배포
+
+### 3. 추가 필수 환경변수
 
 다음 환경변수들도 Vercel에 설정되어 있어야 합니다:
 
-#### Clerk 인증
+#### Clerk 인증 (프로덕션 키 필수!)
 ```
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
-CLERK_SECRET_KEY=sk_live_...
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_xxxxxxxxxxxxxxxxxxxxx
+CLERK_SECRET_KEY=sk_live_xxxxxxxxxxxxxxxxxxxxx
 ```
+
+**중요**: 
+- 프로덕션 배포 시에는 반드시 **프로덕션 키**(`pk_live_...`, `sk_live_...`)를 사용해야 합니다
+- 개발 키(`pk_test_...`, `sk_test_...`)를 사용하면 경고가 표시되고 사용 제한이 있습니다
+- Clerk Dashboard에서 프로덕션 인스턴스의 키를 확인하세요
 
 #### Supabase
 ```
@@ -97,8 +122,19 @@ git push
 
 ### 2. 빌드 로그 확인
 
-배포 시 빌드 로그에서 환경변수 관련 에러 확인:
-- `Environment variable not found` 에러가 있으면 환경변수가 설정되지 않은 것
+배포 시 빌드 로그에서 다음 로그를 확인하세요:
+
+```
+[Sitemap] Environment check:
+  - NEXT_PUBLIC_APP_URL: https://mytrip-eight.vercel.app
+  - VERCEL_URL: (not set) 또는 mytrip-jqrb62n5k-aidens-projects-5ce02444.vercel.app
+[Sitemap] Using NEXT_PUBLIC_APP_URL: https://mytrip-eight.vercel.app
+[Sitemap] Base URL: https://mytrip-eight.vercel.app
+```
+
+- `NEXT_PUBLIC_APP_URL`이 설정되어 있으면 해당 URL 사용
+- 설정되지 않으면 `VERCEL_URL` 사용
+- 둘 다 없으면 기본값 `https://mytrip-eight.vercel.app` 사용
 
 ## 주의사항
 
@@ -118,6 +154,7 @@ git push
 
 - [ ] Vercel 대시보드에서 환경변수가 설정되어 있는가?
 - [ ] 환경변수 이름이 정확한가? (`TOUR_API_KEY` 또는 `NEXT_PUBLIC_TOUR_API_KEY`)
+- [ ] `NEXT_PUBLIC_APP_URL`이 설정되어 있는가?
 - [ ] 환경변수 값에 공백이나 따옴표가 없는가?
 - [ ] 환경변수 추가 후 재배포했는가?
 - [ ] 빌드 로그에서 환경변수 관련 에러가 없는가?

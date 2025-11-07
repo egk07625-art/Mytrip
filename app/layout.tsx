@@ -35,6 +35,19 @@ export default function RootLayout({
     process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
     (typeof window !== "undefined" ? (window as any).__NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY__ : undefined);
 
+  // 프로덕션 환경에서 개발 키 사용 감지
+  const isProduction = process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production";
+  const isDevelopmentKey = publishableKey?.startsWith("pk_test_");
+  
+  if (isProduction && isDevelopmentKey && typeof window === "undefined") {
+    console.warn(
+      "⚠️ [Layout] WARNING: Using Clerk development key in production environment!",
+      "\n  Please set NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY to a production key (pk_live_...)",
+      "\n  in Vercel Dashboard → Settings → Environment Variables",
+      "\n  Current key prefix:", publishableKey?.substring(0, 10)
+    );
+  }
+
   // 빌드 시점 환경 변수 디버깅 (개발 환경에서만 출력)
   // 프로덕션에서는 보안상 상세 로그를 출력하지 않음
   if (typeof window === "undefined" && process.env.NODE_ENV === "development") {
@@ -47,6 +60,8 @@ export default function RootLayout({
       hasPublishableKey: !!publishableKey,
       keyPrefix: publishableKey?.substring(0, 10) || "NOT_SET",
       keyLength: publishableKey?.length || 0,
+      isProductionKey: publishableKey?.startsWith("pk_live_"),
+      isDevelopmentKey: publishableKey?.startsWith("pk_test_"),
       nodeEnv: process.env.NODE_ENV,
       isVercel: !!process.env.VERCEL,
       vercelEnv: process.env.VERCEL_ENV || "N/A",

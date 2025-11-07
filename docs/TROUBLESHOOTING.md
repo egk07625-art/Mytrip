@@ -18,16 +18,28 @@ Clerk: Clerk has been loaded with development keys. Development instances have s
 - 이 경고는 **무시해도 됩니다**. 개발 중에는 정상적인 동작입니다.
 - 개발 환경에서는 Clerk 개발 인스턴스 사용 제한이 있지만, 로컬 개발에는 문제없습니다.
 
-#### 프로덕션 배포 시
-1. Clerk Dashboard에서 프로덕션 인스턴스 생성
-2. 프로덕션 키를 환경 변수에 설정
-3. Vercel 등 배포 환경에서 환경 변수 업데이트
+#### 프로덕션 배포 시 (Vercel)
+1. **Clerk Dashboard에서 프로덕션 키 확인**
+   - [Clerk Dashboard](https://dashboard.clerk.com/) 접속
+   - 프로젝트 선택 → **API Keys** 메뉴
+   - **Production** 인스턴스의 키 확인 (`pk_live_...`, `sk_live_...`)
 
-```bash
-# .env.production 또는 배포 환경 설정
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
-CLERK_SECRET_KEY=sk_live_...
-```
+2. **Vercel 대시보드에서 환경 변수 설정**
+   - [Vercel Dashboard](https://vercel.com/dashboard) 접속
+   - 프로젝트 선택 → **Settings** → **Environment Variables**
+   - 다음 환경 변수 추가:
+     ```
+     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_xxxxxxxxxxxxxxxxxxxxx
+     CLERK_SECRET_KEY=sk_live_xxxxxxxxxxxxxxxxxxxxx
+     ```
+   - **환경 선택**: ✅ Production, ✅ Preview (모두 체크)
+   - **주의**: 따옴표 없이, 공백 없이 입력
+
+3. **재배포**
+   - **Deployments** 탭 → 최신 배포의 **Redeploy**
+   - 또는 Git 푸시로 자동 재배포
+
+**자세한 내용**: [Vercel 프로덕션 환경 변수 설정 가이드](./vercel-env-production-fix.md)
 
 ## 체크리스트
 
