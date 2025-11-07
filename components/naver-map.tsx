@@ -190,37 +190,41 @@ export default function NaverMap({
 
   // mapRef 연결 확인 (주기적으로 확인)
   useEffect(() => {
-    if (mapRefReady) {
-      return; // 이미 연결되었으면 스킵
+    // mapRef가 이미 연결되어 있으면 즉시 설정
+    if (mapRef.current) {
+      console.log("[NaverMap] mapRef 연결 확인됨 (즉시)");
+      setMapRefReady(true);
+      return;
     }
 
     const checkMapRef = () => {
       if (mapRef.current) {
         console.log("[NaverMap] mapRef 연결 확인됨");
         setMapRefReady(true);
+        return true;
       }
+      return false;
     };
 
-    // 즉시 확인
-    checkMapRef();
-
-    // 주기적으로 확인 (최대 1초)
+    // 주기적으로 확인 (최대 2초)
     const intervalId = setInterval(() => {
-      checkMapRef();
+      if (checkMapRef()) {
+        clearInterval(intervalId);
+      }
     }, 100);
 
     const timeoutId = setTimeout(() => {
       clearInterval(intervalId);
       if (!mapRefReady) {
-        console.warn("[NaverMap] mapRef 연결 타임아웃");
+        console.warn("[NaverMap] mapRef 연결 타임아웃 (2초)");
       }
-    }, 1000);
+    }, 2000);
 
     return () => {
       clearInterval(intervalId);
       clearTimeout(timeoutId);
     };
-  }, [mapRefReady]);
+  }, []); // 마운트 시 한 번만 실행
 
   // 지도 초기화 (스크립트 로드 및 지도 인스턴스 생성만)
   useEffect(() => {
