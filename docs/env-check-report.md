@@ -76,18 +76,21 @@ NEXT_PUBLIC_APP_URL=https://mytrip-eight.vercel.app
 
 **주의**: 마지막에 슬래시(`/`) 없이 입력
 
-### 5. 네이버 지도 (선택 사항)
+### 5. 네이버 지도 (필수)
 
 **Vercel 설정 값:**
 ```
 NEXT_PUBLIC_NAVER_MAP_CLIENT_ID=9n5wf7gh0p
 ```
 
+**참고**: `next.config.ts`의 `env` 섹션에 명시적으로 추가되어 있어 빌드 타임에 주입됩니다.
+
 ## Vercel 설정 체크리스트
 
 - [ ] Clerk 프로덕션 키 확인 및 설정 (`pk_live_...`, `sk_live_...`)
 - [ ] 모든 환경 변수 값에서 따옴표 제거
 - [ ] `NEXT_PUBLIC_APP_URL` 추가
+- [ ] `NEXT_PUBLIC_NAVER_MAP_CLIENT_ID` 추가 (지도 기능 사용 시 필수)
 - [ ] Production 및 Preview 환경 모두에 체크
 - [ ] 환경 변수 설정 후 재배포
 - [ ] 빌드 캐시 클리어 (필요시)
