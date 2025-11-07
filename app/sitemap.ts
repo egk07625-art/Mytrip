@@ -47,9 +47,9 @@ const DEFAULT_AREA_CODES = [
  * 정적 생성 시 headers()를 사용할 수 없으므로 환경 변수만 사용
  */
 async function getBaseUrl(): Promise<string> {
-  // 환경 변수 우선 사용
+  // 환경 변수 우선 사용 (끝의 슬래시 제거)
   if (process.env.NEXT_PUBLIC_APP_URL) {
-    return process.env.NEXT_PUBLIC_APP_URL;
+    return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
   }
 
   // Vercel 환경 변수

@@ -9,6 +9,8 @@ import { useEffect, useRef } from "react";
  * 사용자가 로그인한 상태에서 이 훅을 사용하면
  * 자동으로 /api/sync-user를 호출하여 Supabase users 테이블에 사용자 정보를 저장합니다.
  *
+ * @param skip - true인 경우 동기화를 건너뜀 (not-found 페이지 등)
+ *
  * @example
  * ```tsx
  * 'use client';
@@ -21,13 +23,13 @@ import { useEffect, useRef } from "react";
  * }
  * ```
  */
-export function useSyncUser() {
+export function useSyncUser(skip?: boolean) {
   const { isLoaded, userId } = useAuth();
   const syncedRef = useRef(false);
 
   useEffect(() => {
-    // 이미 동기화했거나, 로딩 중이거나, 로그인하지 않은 경우 무시
-    if (syncedRef.current || !isLoaded || !userId) {
+    // skip이 true이거나, 이미 동기화했거나, 로딩 중이거나, 로그인하지 않은 경우 무시
+    if (skip || syncedRef.current || !isLoaded || !userId) {
       return;
     }
 
@@ -50,5 +52,5 @@ export function useSyncUser() {
     };
 
     syncUser();
-  }, [isLoaded, userId]);
+  }, [skip, isLoaded, userId]);
 }

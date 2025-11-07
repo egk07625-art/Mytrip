@@ -36,7 +36,7 @@ import { useState, useMemo, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import { useClerkSupabaseClient } from "@/lib/supabase/clerk-client";
-import { Trash2, Star, AlertCircle, ArrowRight } from "lucide-react";
+import { Trash2, AlertCircle, ArrowRight } from "lucide-react";
 import TourCard from "@/components/tour-card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -526,7 +526,7 @@ export default function BookmarkList({
               >
                 <Checkbox
                   checked={isSelected}
-                  onCheckedChange={(checked) => {
+                  onCheckedChange={() => {
                     handleToggleSelect(item.bookmark.content_id);
                   }}
                   onClick={(e) => {

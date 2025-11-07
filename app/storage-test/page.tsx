@@ -13,6 +13,9 @@ import {
 } from "react-icons/lu";
 import Link from "next/link";
 
+// 동적 렌더링 강제 (useSearchParams 에러 방지)
+export const dynamic = 'force-dynamic';
+
 // Supabase Storage FileObject 타입 정의
 interface FileObject {
   id: string;

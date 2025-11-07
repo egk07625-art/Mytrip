@@ -1,6 +1,6 @@
 import { SignedOut, SignInButton, SignedIn, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
-import React from "react";
+import React, { Suspense } from "react";
 import { Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TourSearch from "@/components/tour-search";
@@ -16,7 +16,9 @@ const Navbar = () => {
         
         {/* 가운데: 검색창 */}
         <div className="flex-1 flex justify-center">
-          <TourSearch variant="compact" className="w-full max-w-xl" />
+          <Suspense fallback={<div className="w-full max-w-xl h-10 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />}>
+            <TourSearch variant="compact" className="w-full max-w-xl" />
+          </Suspense>
         </div>
         
         {/* 오른쪽: 북마크 및 로그인 */}
