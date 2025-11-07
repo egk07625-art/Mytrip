@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file route.ts
  * @description 한국관광공사 API 프록시 엔드포인트
  *
@@ -120,7 +120,13 @@ export async function GET(request: NextRequest) {
             VERCEL: !!process.env.VERCEL,
           },
         },
-        { status: 500 }
+        { status: 500,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+          },
+        }
       );
     }
     
@@ -134,7 +140,13 @@ export async function GET(request: NextRequest) {
           error: "Invalid endpoint",
           message: `지원하는 엔드포인트: ${Object.keys(ENDPOINT_CONFIG).join(", ")}`,
         },
-        { status: 400 }
+        { status: 400,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+          },
+        }
       );
     }
 
@@ -162,7 +174,13 @@ export async function GET(request: NextRequest) {
             message: `필수 파라미터가 누락되었습니다: ${param}`,
             required: config.requiredParams,
           },
-          { status: 400 }
+        { status: 400,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+          },
+        }
         );
       }
       apiParams.append(param, value);
@@ -266,7 +284,13 @@ export async function GET(request: NextRequest) {
             apiKeyLength: getTourApiKey().length,
             apiKeyPreview: getTourApiKey().substring(0, 10) + "...",
           },
-          { status: response.status }
+          { status: response.status,
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET, OPTIONS",
+              "Access-Control-Allow-Headers": "Content-Type",
+            },
+          }
         );
       }
 
@@ -276,7 +300,13 @@ export async function GET(request: NextRequest) {
           message: `API 요청 실패: ${response.status} ${response.statusText}`,
           details: errorText.substring(0, 500),
         },
-        { status: response.status }
+          { status: response.status,
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET, OPTIONS",
+              "Access-Control-Allow-Headers": "Content-Type",
+            },
+          }
       );
     }
 
@@ -294,7 +324,13 @@ export async function GET(request: NextRequest) {
           message: resultMsg,
           resultCode: data.response?.header?.resultCode,
         },
-        { status: 400 }
+        { status: 400,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+          },
+        }
       );
     }
 
@@ -305,10 +341,17 @@ export async function GET(request: NextRequest) {
       status: 200,
       headers: {
         "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
       },
     });
   } catch (error) {
-    console.error("[Tour API] Error:", error);
+    console.error("[Tour API] Unexpected error:", error);
+    console.error("[Tour API] Error type:", error instanceof Error ? error.constructor.name : typeof error);
+    console.error("[Tour API] Error message:", error instanceof Error ? error.message : String(error));
+    console.error("[Tour API] Error stack:", error instanceof Error ? error.stack : "N/A");
+    console.groupEnd();
 
     // 환경변수 에러인 경우
     if (error instanceof Error && error.message.includes("TOUR_API_KEY")) {
@@ -324,7 +367,13 @@ export async function GET(request: NextRequest) {
           message: "환경변수가 설정되지 않았습니다. Vercel 대시보드에서 TOUR_API_KEY 환경변수를 확인하고 재배포해주세요.",
           details: error.message,
         },
-        { status: 500 }
+        { status: 500,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+          },
+        }
       );
     }
 
@@ -333,9 +382,28 @@ export async function GET(request: NextRequest) {
         error: "Internal server error",
         message: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+        { status: 500,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+          },
+        }
     );
   }
 }
 
 
+
+
+// OPTIONS ?붿껌 泥섎━ (CORS preflight)
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    },
+  });
+}

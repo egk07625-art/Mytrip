@@ -402,6 +402,9 @@
     - [x] `docs/vercel-clerk-env-fix.md`
     - [x] `docs/vercel-env-build-time-fix.md`
     - [x] `docs/vercel-env-not-injected-fix.md`
+  - [x] API 라우트에 CORS 헤더 추가 (`/api/tour`, `/api/sync-user`)
+  - [x] OPTIONS 핸들러 추가 (CORS preflight 지원)
+  - [x] sync-user API 디버깅 로그 강화 (환경변수 체크, 에러 상세 정보)
 - [ ] 최종 가이드라인 준수 체크리스트
   - [x] 가이드라인 검증 스크립트 작성 (`scripts/verify-guidelines.ts`)
   - [x] npm 스크립트 추가 (`pnpm verify:guidelines`)

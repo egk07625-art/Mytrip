@@ -1,118 +1,203 @@
-# Vercel 배포 시 401 API 에러 해결 가이드
+﻿# Vercel 諛고룷 ??401 API ?먮윭 ?닿껐 媛?대뱶
 
-## 문제 상황
+## 臾몄젣 ?곹솴
 
-Vercel 배포 환경에서 401 API 에러가 발생하는 경우, 주요 원인은 다음과 같습니다:
+Vercel 諛고룷 ?섍꼍?먯꽌 401 API ?먮윭媛 諛쒖깮?섎뒗 寃쎌슦, 二쇱슂 ?먯씤? ?ㅼ쓬怨?媛숈뒿?덈떎:
 
-1. **환경변수 미설정**: `TOUR_API_KEY` 또는 `NEXT_PUBLIC_TOUR_API_KEY`가 Vercel에 설정되지 않음
-2. **환경변수 설정 후 재배포 미실시**: 환경변수 추가 후 재배포를 하지 않음
-3. **Server Component에서 내부 API 호출 시 baseUrl 문제**: Vercel 환경에서 URL 결정 로직 문제
+1. **?섍꼍蹂??誘몄꽕??*: TOUR_API_KEY ?먮뒗 NEXT_PUBLIC_TOUR_API_KEY媛 Vercel???ㅼ젙?섏? ?딆쓬
+2. **?섍꼍蹂???ㅼ젙 ???щ같??誘몄떎??*: ?섍꼍蹂??異붽? ???щ같?щ? ?섏? ?딆쓬
+3. **Clerk ?몄쬆 ?ㅽ뙣**: /api/sync-user?먯꽌 Clerk ?몄뀡???녾굅??留뚮즺??4. **Clerk ?꾨찓???ㅼ젙 臾몄젣**: Clerk Dashboard?먯꽌 ?덉슜???꾨찓?몄씠 ?ㅼ젙?섏? ?딆쓬
+5. **CORS ?ㅼ젙 臾몄젣**: ?대씪?댁뼵?몄뿉??API ?몄텧 ???꾨찓??遺덉씪移?
+## 401 ?먮윭 諛쒖깮 ?꾩튂蹂??먯씤
 
-## 해결 방법
+### /api/tour - ?쒓뎅愿愿묎났??API ?몄쬆 ?ㅽ뙣
 
-### 1. Vercel 환경변수 확인 및 설정
+**利앹긽**: 
+- 401 Unauthorized ?먮윭
+- "Authentication failed" 硫붿떆吏
 
-1. [Vercel Dashboard](https://vercel.com/dashboard) 접속
-2. 프로젝트 선택
-3. **Settings** → **Environment Variables** 메뉴로 이동
-4. 다음 환경변수 확인/설정:
+**?먯씤**:
+- TOUR_API_KEY ?섍꼍蹂??誘몄꽕??- API ?ㅺ? ?섎せ?섏뿀嫄곕굹 留뚮즺??- API ???몄퐫??臾몄젣
 
-```
+**?닿껐 諛⑸쾿**:
+1. Vercel Dashboard ??Settings ??Environment Variables
+2. TOUR_API_KEY ?섍꼍蹂???뺤씤/?ㅼ젙
+3. ?섍꼍蹂???ㅼ젙 ???щ같??
+### /api/sync-user - Clerk ?몄쬆 ?ㅽ뙣
+
+**利앹긽**:
+- 401 Unauthorized ?먮윭
+- "Unauthorized" 硫붿떆吏
+
+**?먯씤**:
+- ?ъ슜?먭? 濡쒓렇?명븯吏 ?딆쓬
+- Clerk ?몄뀡??留뚮즺??- Clerk ?섍꼍蹂??誘몄꽕??(NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY)
+- Clerk Dashboard?먯꽌 ?꾨찓?몄씠 ?덉슜?섏? ?딆쓬
+
+**?닿껐 諛⑸쾿**:
+1. Clerk Dashboard ??Settings ??Domains
+2. Allowed Origins???꾨줈?뺤뀡 ?꾨찓??異붽?:
+   - https://mytrip-eight.vercel.app
+   - https://*.vercel.app (Preview ?섍꼍??
+3. Vercel ?섍꼍蹂???뺤씤:
+   - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY (?꾨줈?뺤뀡 ?? pk_live_...)
+   - CLERK_SECRET_KEY (?꾨줈?뺤뀡 ?? sk_live_...)
+
+## ?닿껐 諛⑸쾿
+
+### 1. Vercel ?섍꼍蹂???뺤씤 諛??ㅼ젙
+
+1. [Vercel Dashboard](https://vercel.com/dashboard) ?묒냽
+2. ?꾨줈?앺듃 ?좏깮
+3. **Settings** ??**Environment Variables** 硫붾돱濡??대룞
+4. ?ㅼ쓬 ?섍꼍蹂???뺤씤/?ㅼ젙:
+
+#### ?꾩닔 ?섍꼍蹂??
+\\\
+# ?쒓뎅愿愿묎났??API
 TOUR_API_KEY=your_tour_api_key_here
-```
 
-또는
+# Clerk ?몄쬆 (?꾨줈?뺤뀡 ???꾩닔!)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_xxxxxxxxxxxxxxxxxxxxx
+CLERK_SECRET_KEY=sk_live_xxxxxxxxxxxxxxxxxxxxx
 
-```
-NEXT_PUBLIC_TOUR_API_KEY=your_tour_api_key_here
-```
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
-**참고**: 
-- `TOUR_API_KEY`: 서버 전용 (권장, 보안상 더 안전)
-- `NEXT_PUBLIC_TOUR_API_KEY`: 클라이언트에서도 접근 가능
+# ??URL (?좏깮 ?ы빆?댁?留?沅뚯옣)
+NEXT_PUBLIC_APP_URL=https://mytrip-eight.vercel.app
+\\\
 
-### 2. 환경변수 설정 후 재배포
+**李멸퀬**: 
+- TOUR_API_KEY: ?쒕쾭 ?꾩슜 (沅뚯옣, 蹂댁븞?????덉쟾)
+- NEXT_PUBLIC_TOUR_API_KEY: ?대씪?댁뼵?몄뿉?쒕룄 ?묎렐 媛??- Clerk ?ㅻ뒗 諛섎뱶???꾨줈?뺤뀡 ??pk_live_..., sk_live_...)瑜??ъ슜?댁빞 ??
+### 2. Clerk Dashboard?먯꽌 ?꾨찓???ㅼ젙
 
-환경변수를 추가하거나 수정한 후에는 반드시 재배포해야 합니다:
+1. [Clerk Dashboard](https://dashboard.clerk.com/) ?묒냽
+2. ?꾨줈?앺듃 ?좏깮 ??**Settings** ??**Domains**
+3. **Allowed Origins**???ㅼ쓬 異붽?:
+   - https://mytrip-eight.vercel.app
+   - https://*.vercel.app (Preview ?섍꼍??
+4. **Save** ?대┃
 
-1. Vercel 대시보드에서 **Deployments** 탭 선택
-2. 최신 배포의 **⋯** (더보기) 메뉴 클릭
-3. **Redeploy** 선택
+### 3. ?섍꼍蹂???ㅼ젙 ???щ같??
+?섍꼍蹂?섎? 異붽??섍굅???섏젙???꾩뿉??諛섎뱶???щ같?ы빐???⑸땲??
 
-또는 Git에 푸시하여 자동 재배포:
+1. Vercel ??쒕낫?쒖뿉??**Deployments** ???좏깮
+2. 理쒖떊 諛고룷??**??* (?붾낫湲? 硫붾돱 ?대┃
+3. **Redeploy** ?좏깮
 
-```bash
+?먮뒗 Git???몄떆?섏뿬 ?먮룞 ?щ같??
+
+\\\ash
 git commit --allow-empty -m "Trigger redeploy after env var update"
 git push
-```
+\\\
 
-### 3. 배포 URL 확인 (선택 사항)
+### 4. CORS ?ㅼ젙 (?대? ?곸슜??
 
-Vercel 대시보드에서 배포 URL을 확인한 후, 다음 환경변수도 설정하는 것을 권장합니다:
+紐⑤뱺 API ?쇱슦?몄뿉 CORS ?ㅻ뜑媛 異붽??섏뿀?듬땲??
 
-```
-NEXT_PUBLIC_APP_URL=https://mytrip-eight.vercel.app/
-```
+- \/api/tour\: GET, OPTIONS 吏??- \/api/sync-user\: POST, OPTIONS 吏??
+CORS preflight ?붿껌? ?먮룞?쇰줈 泥섎━?⑸땲??
 
-이렇게 하면 Server Component에서 내부 API 호출 시 baseUrl 결정이 더 안정적입니다.
+## ?붾쾭源?諛⑸쾿
 
-### 4. 코드 개선 사항 (2025년 1월 적용)
+### 1. Vercel ?⑥닔 濡쒓렇 ?뺤씤
 
-다음 개선 사항이 적용되었습니다:
+1. Vercel ??쒕낫????**Deployments** ??理쒖떊 諛고룷 ?대┃
+2. **Functions** ??뿉???대떦 ?⑥닔 濡쒓렇 ?뺤씤:
+   - \/api/tour\: ?섍꼍蹂??諛?API ???곹깭 ?뺤씤
+   - \/api/sync-user\: Clerk ?몄쬆 ?곹깭 ?뺤씤
 
-#### `app/page.tsx` 개선
-- Next.js 15의 `headers()`를 사용하여 요청 URL을 더 안정적으로 가져오기
-- Vercel 배포 환경에서 host 헤더 사용
-- 더 자세한 로깅 추가
+#### /api/tour 濡쒓렇 ?뺤씤 ?ы빆
 
-#### `app/api/tour/route.ts` 개선
-- 요청 URL 및 헤더 로깅 추가
-- 환경변수 상태 상세 로깅
-- Vercel 환경변수 확인 추가
+\\\
+[Tour API] Environment Check
+  - TOUR_API_KEY exists: true/false
+  - API Key length: ?レ옄 (0???꾨땲?댁빞 ??
+  - API Key preview: 泥?10??\\\
 
-## 디버깅 방법
+#### /api/sync-user 濡쒓렇 ?뺤씤 ?ы빆
 
-### 1. Vercel 로그 확인
+\\\
+[Sync User] Clerk env check:
+  - hasPublishableKey: true/false
+  - hasSecretKey: true/false
+  - isProductionKey: true/false
+[Sync User] Auth result:
+  - userId: ?ъ슜??ID ?먮뒗 "null"
+  - hasUserId: true/false
+\\\
 
-1. Vercel 대시보드 → **Deployments** → 최신 배포 클릭
-2. **Functions** 탭에서 `/api/tour` 함수 로그 확인
-3. 다음 정보 확인:
-   - `TOUR_API_KEY exists`: true 여야 함
-   - `API Key length`: 0이 아니어야 함
-   - `Request URL`: 올바른 URL인지 확인
+### 2. 釉뚮씪?곗? 媛쒕컻???꾧뎄 ?뺤씤
 
-### 2. 브라우저 개발자 도구 확인
+1. 諛고룷???ъ씠?몄뿉??F12 ?ㅻ줈 媛쒕컻???꾧뎄 ?닿린
+2. **Console** ??
+   - ?먮윭 硫붿떆吏 ?뺤씤
+   - API ?몄텧 愿??濡쒓렇 ?뺤씤
+3. **Network** ??
+   - API ?붿껌 ?곹깭 ?뺤씤
+   - 401 ?먮윭??寃쎌슦 ?묐떟 ?댁슜 ?뺤씤
+   - Request Headers ?뺤씤 (Authorization ?ㅻ뜑 ??
 
-1. 배포된 사이트에서 F12 키로 개발자 도구 열기
-2. **Console** 탭:
-   - `[Home] Base URL`: 올바른 URL인지 확인
-   - `[Home] API URL`: 올바른 API URL인지 확인
-   - 에러 메시지 확인
-3. **Network** 탭:
-   - `/api/tour` 요청 상태 확인
-   - 401 에러인 경우 응답 내용 확인
+### 3. Chrome DevTools MCP ?ъ슜 (沅뚯옣)
 
-### 3. Chrome DevTools MCP 사용 (권장)
+諛고룷 URL???쒓났?섎㈃ Chrome DevTools濡??ㅼ젣 ?곹깭瑜??뺤씤?????덉뒿?덈떎:
 
-배포 URL을 제공하면 Chrome DevTools로 실제 상태를 확인할 수 있습니다:
+1. 諛고룷 URL ?뺤씤 (?? \https://your-project.vercel.app\)
+2. Chrome DevTools MCP濡??섏씠吏 ?닿린
+3. ?ㅽ듃?뚰겕 ?붿껌 諛?肄섏넄 濡쒓렇 ?뺤씤
+4. ?ㅼ젣 ?먮윭 硫붿떆吏 諛?API ?묐떟 ?뺤씤
 
-1. 배포 URL 확인 (예: `https://your-project.vercel.app`)
-2. Chrome DevTools MCP로 페이지 열기
-3. 네트워크 요청 및 콘솔 로그 확인
-4. 실제 에러 메시지 및 API 응답 확인
+## 肄붾뱶 媛쒖꽑 ?ы빆 (2025??1???곸슜)
 
-## 문제 해결 체크리스트
+?ㅼ쓬 媛쒖꽑 ?ы빆???곸슜?섏뿀?듬땲??
 
-- [ ] Vercel 대시보드에서 `TOUR_API_KEY` 환경변수가 설정되어 있는가?
-- [ ] 환경변수 값에 공백이나 따옴표가 없는가?
-- [ ] 환경변수 추가 후 재배포했는가?
-- [ ] Vercel 로그에서 API 키가 제대로 로드되는지 확인했는가?
-- [ ] API 키가 유효한가? (공공데이터포털에서 확인)
-- [ ] `NEXT_PUBLIC_APP_URL` 환경변수가 설정되어 있는가? (선택 사항)
+### \pp/api/tour/route.ts\ 媛쒖꽑
+- ?붿껌 URL 諛??ㅻ뜑 濡쒓퉭 異붽?
+- ?섍꼍蹂???곹깭 ?곸꽭 濡쒓퉭
+- Vercel ?섍꼍蹂???뺤씤 異붽?
+- CORS ?ㅻ뜑 異붽? (紐⑤뱺 ?묐떟)
+- OPTIONS ?몃뱾??異붽? (CORS preflight)
 
-## 추가 리소스
+### \pp/api/sync-user/route.ts\ 媛쒖꽑
+- Clerk ?섍꼍蹂???곹깭 濡쒓퉭 異붽?
+- ?몄쬆 ?ㅽ뙣 ???곸꽭???먮윭 硫붿떆吏 ?쒓났
+- 媛?ν븳 ?먯씤 紐⑸줉 濡쒓퉭
+- CORS ?ㅻ뜑 異붽?
+- OPTIONS ?몃뱾??異붽? (CORS preflight)
 
-- [Vercel 환경변수 문서](https://vercel.com/docs/projects/environment-variables)
-- [Next.js 환경변수 문서](https://nextjs.org/docs/app/building-your-application/configuring/environment-variables)
-- [공공데이터포털 API 키 발급](https://www.data.go.kr/)
+### \pp/page.tsx\ 媛쒖꽑
+- Next.js 15??\headers()\瑜??ъ슜?섏뿬 ?붿껌 URL?????덉젙?곸쑝濡?媛?몄삤湲?- Vercel 諛고룷 ?섍꼍?먯꽌 host ?ㅻ뜑 ?ъ슜
+- ???먯꽭??濡쒓퉭 異붽?
 
+## 臾몄젣 ?닿껐 泥댄겕由ъ뒪??
+### ?섍꼍蹂???뺤씤
+- [ ] Vercel ??쒕낫?쒖뿉??\TOUR_API_KEY\ ?섍꼍蹂?섍? ?ㅼ젙?섏뼱 ?덈뒗媛?
+- [ ] \NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY\媛 ?꾨줈?뺤뀡 ?ㅼ씤媛? (\pk_live_...\)
+- [ ] \CLERK_SECRET_KEY\媛 ?꾨줈?뺤뀡 ?ㅼ씤媛? (\sk_live_...\)
+- [ ] ?섍꼍蹂??媛믪뿉 怨듬갚?대굹 ?곗샂?쒓? ?녿뒗媛?
+- [ ] ?섍꼍蹂??異붽? ???щ같?ы뻽?붽??
+
+### Clerk ?ㅼ젙 ?뺤씤
+- [ ] Clerk Dashboard?먯꽌 ?꾨줈?뺤뀡 ?꾨찓?몄씠 ?덉슜?섏뿀?붽??
+- [ ] Allowed Origins??\https://mytrip-eight.vercel.app\??異붽??섏뿀?붽??
+- [ ] Preview ?섍꼍?⑹쑝濡?\https://*.vercel.app\??異붽??섏뿀?붽??
+
+### 濡쒓렇 ?뺤씤
+- [ ] Vercel 濡쒓렇?먯꽌 API ?ㅺ? ?쒕?濡?濡쒕뱶?섎뒗吏 ?뺤씤?덈뒗媛?
+- [ ] Clerk ?몄쬆???깃났?섎뒗吏 ?뺤씤?덈뒗媛?
+- [ ] 釉뚮씪?곗? 肄섏넄?먯꽌 ?ㅼ젣 ?먮윭 硫붿떆吏瑜??뺤씤?덈뒗媛?
+
+### API ???뺤씤
+- [ ] ?쒓뎅愿愿묎났??API ?ㅺ? ?좏슚?쒓?? (怨듦났?곗씠?고룷?몄뿉???뺤씤)
+- [ ] Clerk ?꾨줈?뺤뀡 ?ㅺ? ?щ컮瑜멸?? (Clerk Dashboard?먯꽌 ?뺤씤)
+
+## 異붽? 由ъ냼??
+- [Vercel ?섍꼍蹂??臾몄꽌](https://vercel.com/docs/projects/environment-variables)
+- [Next.js ?섍꼍蹂??臾몄꽌](https://nextjs.org/docs/app/building-your-application/configuring/environment-variables)
+- [Clerk ?꾨찓???ㅼ젙 媛?대뱶](https://clerk.com/docs/deployments/overview)
+- [怨듦났?곗씠?고룷??API ??諛쒓툒](https://www.data.go.kr/)
