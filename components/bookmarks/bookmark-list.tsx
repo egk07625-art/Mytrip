@@ -411,16 +411,16 @@ export default function BookmarkList({
   // 로딩 상태
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <div className="h-10 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
-          <div className="h-10 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+          <div className="h-8 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+          <div className="h-8 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="h-64 w-full animate-pulse rounded-xl bg-gray-200 dark:bg-gray-700"
+              className="h-52 w-full animate-pulse rounded-xl bg-gray-200 dark:bg-gray-700"
             />
           ))}
         </div>
@@ -431,13 +431,13 @@ export default function BookmarkList({
   // 빈 상태
   if (bookmarks.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
-        <Star className="w-16 h-16 text-gray-400 dark:text-gray-500" />
-        <div className="flex flex-col gap-2">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+      <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
+        <Star className="w-12 h-12 text-gray-400 dark:text-gray-500" />
+        <div className="flex flex-col gap-1.5">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             북마크가 없습니다
           </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-xs text-gray-600 dark:text-gray-400">
             관광지를 북마크하여 나중에 다시 확인하세요.
           </p>
         </div>
@@ -450,13 +450,13 @@ export default function BookmarkList({
 
   if (validBookmarks.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
-        <AlertCircle className="w-16 h-16 text-gray-400 dark:text-gray-500" />
-        <div className="flex flex-col gap-2">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+      <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
+        <AlertCircle className="w-12 h-12 text-gray-400 dark:text-gray-500" />
+        <div className="flex flex-col gap-1.5">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             관광지 정보를 불러올 수 없습니다
           </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-xs text-gray-600 dark:text-gray-400">
             일부 북마크의 관광지 정보를 조회하지 못했습니다.
           </p>
         </div>
@@ -465,16 +465,16 @@ export default function BookmarkList({
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5">
       {/* 컨트롤 바 */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {/* 정렬 옵션 */}
-        <div className="flex items-center gap-2">
-          <label htmlFor="sort-select" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <div className="flex items-center gap-1.5">
+          <label htmlFor="sort-select" className="text-xs font-medium text-gray-700 dark:text-gray-300">
             정렬:
           </label>
           <Select value={sortOption} onValueChange={handleSortChange}>
-            <SelectTrigger id="sort-select" className="w-32">
+            <SelectTrigger id="sort-select" className="w-28 h-8 text-xs">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -501,7 +501,7 @@ export default function BookmarkList({
       </div>
 
       {/* 북마크 목록 */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
         {validBookmarks.map((item) => {
           const tourItem = tourDetailToTourItem(item.tour!);
           const isSelected = selectedIds.has(item.bookmark.content_id);

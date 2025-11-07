@@ -81,31 +81,31 @@ export default function TourCard({ tour, className }: TourCardProps) {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-teal-100 dark:from-blue-900 dark:to-teal-900">
-            <MapPin className="w-16 h-16 text-gray-400 dark:text-gray-500" />
+            <MapPin className="w-12 h-12 text-gray-400 dark:text-gray-500" />
           </div>
         )}
       </div>
 
       {/* 정보 영역 */}
-      <div className="flex flex-col gap-3 p-4 md:p-6">
+      <div className="flex flex-col gap-2 p-3 md:p-5">
         {/* 관광지명 */}
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white line-clamp-2">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-2">
           {tour.title}
         </h3>
 
         {/* 주소 및 타입 뱃지 */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1.5">
           {/* 주소 */}
-          <div className="flex items-start gap-2">
-            <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
-            <span className="text-sm text-gray-600 dark:text-gray-400 line-clamp-1">
+          <div className="flex items-start gap-1.5">
+            <MapPin className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 flex-shrink-0" />
+            <span className="text-xs text-gray-600 dark:text-gray-400 line-clamp-1">
               {tour.addr1}
             </span>
           </div>
 
           {/* 관광 타입 뱃지 */}
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+          <div className="flex items-center gap-1.5">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
               {contentTypeLabel}
             </span>
           </div>

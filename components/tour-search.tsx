@@ -51,13 +51,20 @@ import { updateUrlParam } from "@/lib/utils/url-params";
 
 interface TourSearchProps {
   className?: string;
+  /**
+   * 검색창 스타일 변형
+   * - "default": 기본 스타일 (큰 박스 형태)
+   * - "compact": 간소화된 스타일 (Navbar용)
+   */
+  variant?: "default" | "compact";
 }
 
 /**
  * 관광지 검색창 컴포넌트
  * @param className - 추가 CSS 클래스
+ * @param variant - 검색창 스타일 변형 (기본값: "default")
  */
-export default function TourSearch({ className }: TourSearchProps) {
+export default function TourSearch({ className, variant = "default" }: TourSearchProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -211,6 +218,69 @@ export default function TourSearch({ className }: TourSearchProps) {
     inputValue.trim().length < 2 || // 검색어 유효성 검사 실패
     inputValue.trim() === currentKeyword; // 동일한 검색어
 
+  // Compact 모드 (Navbar용)
+  if (variant === "compact") {
+    return (
+      <div
+        className={`flex items-center gap-2 ${className || ""}`}
+        role="search"
+        aria-label="관광지 검색"
+      >
+        {/* 검색 설명 (스크린 리더용) */}
+        <div id="search-description" className="sr-only">
+          키워드로 관광지를 검색할 수 있습니다. 최소 2자 이상 입력해주세요.
+        </div>
+
+        {/* 검색 입력창 */}
+        <div className="relative flex-1">
+          <Input
+            id="search-input"
+            type="search"
+            placeholder="관광지명, 주소, 설명으로 검색..."
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={isSearching || isPending}
+            className="w-full h-9"
+            aria-label="검색어 입력"
+            aria-describedby="search-description"
+            aria-invalid={inputValue.trim().length > 0 && inputValue.trim().length < 2}
+            aria-busy={isSearching || isPending}
+          />
+          {/* 초기화 버튼 (검색어가 있을 때만 표시) */}
+          {hasKeyword && (
+            <button
+              onClick={handleReset}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+              aria-label="검색어 초기화"
+              type="button"
+            >
+              <X className="size-3.5" aria-hidden="true" />
+            </button>
+          )}
+        </div>
+
+        {/* 검색 버튼 */}
+        <Button
+          onClick={handleSearchClick}
+          disabled={isButtonDisabled}
+          size="sm"
+          className="shrink-0 h-9"
+          aria-label={isSearching || isPending ? "검색 중..." : "검색 실행"}
+          aria-describedby="search-description"
+          aria-busy={isSearching || isPending}
+        >
+          {isSearching || isPending ? (
+            <LoadingSpinner size="sm" className="text-white" />
+          ) : (
+            <Search className="size-4" aria-hidden="true" />
+          )}
+        </Button>
+      </div>
+    );
+  }
+
+  // Default 모드 (기존 스타일)
   return (
     <div
       className={`flex flex-col gap-4 p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm ${className || ""}`}

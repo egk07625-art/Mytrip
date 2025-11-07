@@ -136,13 +136,13 @@ export default async function BookmarksPage({
   console.groupEnd();
 
   return (
-    <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+    <div className="flex flex-col gap-5 p-3 md:p-5 lg:p-6">
       {/* 페이지 제목 */}
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+      <div className="flex flex-col gap-1.5">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           북마크
         </h1>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-xs text-gray-600 dark:text-gray-400">
           저장한 관광지를 확인하고 관리하세요.
         </p>
       </div>
@@ -164,14 +164,14 @@ export default async function BookmarksPage({
  */
 function BookmarkListSkeleton() {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <Skeleton className="h-10 w-32" />
-        <Skeleton className="h-10 w-24" />
+        <Skeleton className="h-8 w-32" />
+        <Skeleton className="h-8 w-24" />
       </div>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 6 }).map((_, i) => (
-          <Skeleton key={i} className="h-64 w-full rounded-xl" />
+          <Skeleton key={i} className="h-52 w-full rounded-xl" />
         ))}
       </div>
     </div>
