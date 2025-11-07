@@ -33,7 +33,6 @@
  * - @/lib/types/tour: TourItem, AreaCode 타입
  */
 
-import TourList from "@/components/tour-list";
 import TourListWrapper from "@/components/tour-list-wrapper";
 import TourFilters from "@/components/tour-filters";
 import TourSearch from "@/components/tour-search";
@@ -41,11 +40,16 @@ import TourSort from "@/components/tour-sort";
 import TourPagination from "@/components/tour-pagination";
 import ErrorMessageWithRetry from "@/components/error-message-with-retry";
 import { fetchAreaCodes } from "@/lib/api/tour-api-client";
-import type { TourItem, ApiResponse, AreaCode, SortOption } from "@/lib/types/tour";
+import type {
+  TourItem,
+  ApiResponse,
+  AreaCode,
+  SortOption,
+} from "@/lib/types/tour";
 import { CONTENT_TYPE_LABEL } from "@/lib/types/tour";
 
 // 빌드 타임에 API 호출을 방지하고 런타임에만 실행되도록 설정
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 /**
  * 관광지 목록을 가져오는 함수
@@ -59,7 +63,7 @@ async function fetchTourList(
   areaCode: string = "1",
   contentTypeId?: string,
   numOfRows: number = 10,
-  pageNo: number = 1
+  pageNo: number = 1,
 ): Promise<{ tours: TourItem[]; totalCount: number; error: string | null }> {
   try {
     console.group("[Home] Fetching tour list");
@@ -70,7 +74,7 @@ async function fetchTourList(
     const headersList = await import("next/headers").then((m) => m.headers());
     const host = headersList.get("host");
     const protocol = headersList.get("x-forwarded-proto") || "https";
-    
+
     // baseUrl 결정 로직 개선
     let baseUrl: string;
     if (host) {
@@ -86,9 +90,9 @@ async function fetchTourList(
       // 개발 환경 기본값
       baseUrl = "http://localhost:3000";
     }
-    
+
     console.log("[Home] Base URL:", baseUrl);
-    
+
     const apiUrl = new URL("/api/tour", baseUrl);
     apiUrl.searchParams.set("endpoint", "areaBasedList");
     apiUrl.searchParams.set("areaCode", areaCode);
@@ -114,10 +118,14 @@ async function fetchTourList(
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error("[Home] API Error:", response.status, errorData);
-      console.error("[Home] Response headers:", Object.fromEntries(response.headers.entries()));
+      console.error(
+        "[Home] Response headers:",
+        Object.fromEntries(response.headers.entries()),
+      );
       console.groupEnd();
       return {
         tours: [],
+        totalCount: 0,
         error: errorData.message || `API 요청 실패: ${response.status}`,
       };
     }
@@ -131,16 +139,26 @@ async function fetchTourList(
       console.groupEnd();
       return {
         tours: [],
+        totalCount: 0,
         error: resultMsg,
       };
     }
 
     // items.item이 배열인지 단일 객체인지 확인
     const items = data.response?.body?.items?.item;
-    const tours: TourItem[] = Array.isArray(items) ? items : items ? [items] : [];
+    const tours: TourItem[] = Array.isArray(items)
+      ? items
+      : items
+      ? [items]
+      : [];
     const totalCount = data.response?.body?.totalCount || 0;
 
-    console.log("Success:", tours.length, "tours loaded, totalCount:", totalCount);
+    console.log(
+      "Success:",
+      tours.length,
+      "tours loaded, totalCount:",
+      totalCount,
+    );
     console.groupEnd();
 
     return { tours, totalCount, error: null };
@@ -150,7 +168,10 @@ async function fetchTourList(
     return {
       tours: [],
       totalCount: 0,
-      error: error instanceof Error ? error.message : "관광지 목록을 불러오는 중 오류가 발생했습니다.",
+      error:
+        error instanceof Error
+          ? error.message
+          : "관광지 목록을 불러오는 중 오류가 발생했습니다.",
     };
   }
 }
@@ -169,12 +190,18 @@ async function fetchTourSearch(
   areaCode?: string,
   contentTypeId?: string,
   numOfRows: number = 10,
-  pageNo: number = 1
+  pageNo: number = 1,
 ): Promise<{ tours: TourItem[]; totalCount: number; error: string | null }> {
   try {
     console.group("[Home] Fetching tour search");
-    console.log("Input params:", { keyword, areaCode, contentTypeId, numOfRows, pageNo });
-    
+    console.log("Input params:", {
+      keyword,
+      areaCode,
+      contentTypeId,
+      numOfRows,
+      pageNo,
+    });
+
     // 필터 파라미터 상태 로깅
     const hasAreaFilter = Boolean(areaCode);
     const hasTypeFilter = Boolean(contentTypeId);
@@ -202,7 +229,7 @@ async function fetchTourSearch(
     const headersList = await import("next/headers").then((m) => m.headers());
     const host = headersList.get("host");
     const protocol = headersList.get("x-forwarded-proto") || "https";
-    
+
     // baseUrl 결정 로직 개선
     let baseUrl: string;
     if (host) {
@@ -218,13 +245,13 @@ async function fetchTourSearch(
       // 개발 환경 기본값
       baseUrl = "http://localhost:3000";
     }
-    
+
     console.log("[Home] Base URL:", baseUrl);
-    
+
     const apiUrl = new URL("/api/tour", baseUrl);
     apiUrl.searchParams.set("endpoint", "searchKeyword");
     apiUrl.searchParams.set("keyword", trimmedKeyword);
-    
+
     // areaCode가 있으면 추가
     if (areaCode) {
       apiUrl.searchParams.set("areaCode", areaCode);
@@ -232,7 +259,7 @@ async function fetchTourSearch(
     } else {
       console.log("[Home] No areaCode filter applied");
     }
-    
+
     // contentTypeId가 있으면 추가
     if (contentTypeId) {
       apiUrl.searchParams.set("contentTypeId", contentTypeId);
@@ -240,7 +267,7 @@ async function fetchTourSearch(
     } else {
       console.log("[Home] No contentTypeId filter applied");
     }
-    
+
     apiUrl.searchParams.set("numOfRows", numOfRows.toString());
     apiUrl.searchParams.set("pageNo", pageNo.toString());
 
@@ -262,7 +289,10 @@ async function fetchTourSearch(
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error("[Home] API Error:", response.status, errorData);
-      console.error("[Home] Response headers:", Object.fromEntries(response.headers.entries()));
+      console.error(
+        "[Home] Response headers:",
+        Object.fromEntries(response.headers.entries()),
+      );
       console.groupEnd();
       return {
         tours: [],
@@ -287,7 +317,11 @@ async function fetchTourSearch(
 
     // items.item이 배열인지 단일 객체인지 확인
     const items = data.response?.body?.items?.item;
-    const tours: TourItem[] = Array.isArray(items) ? items : items ? [items] : [];
+    const tours: TourItem[] = Array.isArray(items)
+      ? items
+      : items
+      ? [items]
+      : [];
     const totalCount = data.response?.body?.totalCount || 0;
 
     console.log("Success:", {
@@ -304,12 +338,13 @@ async function fetchTourSearch(
     return { tours, totalCount, error: null };
   } catch (error) {
     console.error("[Home] Error fetching tour search:", error);
-      console.groupEnd();
-      return {
-        tours: [],
-        totalCount: 0,
-        error: error instanceof Error ? error.message : "검색 중 오류가 발생했습니다.",
-      };
+    console.groupEnd();
+    return {
+      tours: [],
+      totalCount: 0,
+      error:
+        error instanceof Error ? error.message : "검색 중 오류가 발생했습니다.",
+    };
   }
 }
 
@@ -321,7 +356,7 @@ async function fetchTourSearch(
  */
 function sortTours(tours: TourItem[], sortBy: SortOption): TourItem[] {
   const sorted = [...tours];
-  
+
   if (sortBy === "latest") {
     // 최신순: modifiedtime 내림차순
     return sorted.sort((a, b) => {
@@ -355,9 +390,11 @@ export default async function Home({ searchParams }: HomeProps) {
   // - 검색 시(keyword가 있을 때): "전체" 선택 시 areaCode가 없거나 빈 문자열이면 undefined (모든 지역 검색)
   // - 목록 조회 시(keyword가 없을 때): areaCode가 없거나 빈 문자열이면 기본값 "1" (서울) 사용
   const rawAreaCode = params.areaCode?.trim() || "";
-  const areaCode = keyword 
-    ? (rawAreaCode ? rawAreaCode : undefined) // 검색 시: "전체" 선택 시 undefined
-    : (rawAreaCode || "1"); // 목록 조회 시: 기본값 "1"
+  const areaCode = keyword
+    ? rawAreaCode
+      ? rawAreaCode
+      : undefined // 검색 시: "전체" 선택 시 undefined
+    : rawAreaCode || "1"; // 목록 조회 시: 기본값 "1"
   // contentTypeId는 선택적 (빈 값이면 필터링 안 함, "전체" 선택 시)
   const rawContentTypeId = params.contentTypeId?.trim() || "";
   const contentTypeId = rawContentTypeId ? rawContentTypeId : undefined;
@@ -388,8 +425,10 @@ export default async function Home({ searchParams }: HomeProps) {
 
   // 페이지 번호가 범위를 벗어나면 1페이지로 리다이렉트
   if (page > totalPages && totalPages > 0) {
-    console.warn(`[Home] Page ${page} is out of range (max: ${totalPages}), redirecting to page 1`);
-    // 리다이렉트는 클라이언트에서 처리하도록 함 (Server Component에서 redirect 사용 가능하지만, 
+    console.warn(
+      `[Home] Page ${page} is out of range (max: ${totalPages}), redirecting to page 1`,
+    );
+    // 리다이렉트는 클라이언트에서 처리하도록 함 (Server Component에서 redirect 사용 가능하지만,
     // 여기서는 URL 파라미터만 조정하여 자연스럽게 처리)
   }
 
@@ -440,24 +479,38 @@ export default async function Home({ searchParams }: HomeProps) {
               </h2>
               <div className="flex flex-col gap-1">
                 <p className="text-base text-gray-700 dark:text-gray-300">
-                  <span className="font-medium text-primary">"{keyword}"</span> 검색 결과: 총{" "}
-                  <span className="font-semibold text-primary text-lg">{tours.length}개</span>
+                  <span className="font-medium text-primary">
+                    &quot;{keyword}&quot;
+                  </span>{" "}
+                  검색 결과: 총{" "}
+                  <span className="font-semibold text-primary text-lg">
+                    {tours.length}개
+                  </span>
                 </p>
                 {/* 필터 정보 표시 (필터가 적용된 경우) */}
-                {((keyword && areaCode) || (!keyword && areaCode !== "1") || contentTypeId) && (
+                {((keyword && areaCode) ||
+                  (!keyword && areaCode !== "1") ||
+                  contentTypeId) && (
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     적용된 필터:{" "}
-                    {((keyword && areaCode) || (!keyword && areaCode !== "1")) && (
+                    {((keyword && areaCode) ||
+                      (!keyword && areaCode !== "1")) && (
                       <span className="font-medium">
                         지역:{" "}
-                        {areaCodes.find((ac: AreaCode) => ac.code === areaCode)?.name ||
-                          areaCode}
+                        {areaCodes.find((ac: AreaCode) => ac.code === areaCode)
+                          ?.name || areaCode}
                       </span>
                     )}
-                    {((keyword && areaCode) || (!keyword && areaCode !== "1")) && contentTypeId && " · "}
+                    {((keyword && areaCode) ||
+                      (!keyword && areaCode !== "1")) &&
+                      contentTypeId &&
+                      " · "}
                     {contentTypeId && (
                       <span className="font-medium">
-                        타입: {CONTENT_TYPE_LABEL[contentTypeId as keyof typeof CONTENT_TYPE_LABEL] || contentTypeId}
+                        타입:{" "}
+                        {CONTENT_TYPE_LABEL[
+                          contentTypeId as keyof typeof CONTENT_TYPE_LABEL
+                        ] || contentTypeId}
                       </span>
                     )}
                   </p>
@@ -468,13 +521,14 @@ export default async function Home({ searchParams }: HomeProps) {
 
           {/* 리스트 영역 (지도 구현 전까지 전체 너비 사용) */}
           {error ? (
-            <ErrorMessageWithRetry 
-              message={error} 
-              type="api"
-            />
+            <ErrorMessageWithRetry message={error} type="api" />
           ) : (
             <>
-              <TourListWrapper tours={sortedTours} error={error} searchKeyword={keyword} />
+              <TourListWrapper
+                tours={sortedTours}
+                error={error}
+                searchKeyword={keyword}
+              />
               {/* 페이지네이션 */}
               {!error && totalPages > 1 && (
                 <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">

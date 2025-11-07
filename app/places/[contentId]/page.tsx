@@ -39,7 +39,6 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import BackButton from "@/components/back-button";
 import DetailInfo from "@/components/tour-detail/detail-info";
-import LoadingPage from "@/components/loading-page";
 import ErrorMessageWithRetry from "@/components/error-message-with-retry";
 import { fetchTourDetail } from "@/lib/api/tour-api-client";
 import { Skeleton } from "@/components/ui/skeleton";

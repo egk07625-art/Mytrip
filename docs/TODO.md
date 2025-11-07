@@ -287,6 +287,12 @@
   - [x] Next.js 15 headers() API를 사용하여 동적 URL 결정
   - [x] 디버깅 로그 강화 (요청 URL, 헤더, 환경변수 확인)
   - [x] Vercel 401 에러 해결 가이드 작성 (`docs/vercel-401-error-fix.md`)
+  - [x] Vercel 빌드 타임 환경 변수 주입 개선 (`next.config.ts` env 설정)
+  - [x] Clerk 환경 변수 디버깅 로그 강화 (`app/layout.tsx`)
+  - [x] Vercel 환경 변수 문제 해결 가이드 작성
+    - [x] `docs/vercel-clerk-env-fix.md`
+    - [x] `docs/vercel-env-build-time-fix.md`
+    - [x] `docs/vercel-env-not-injected-fix.md`
 - [ ] 최종 가이드라인 준수 체크리스트
   - [ ] 불필요한 추상화가 없는가?
   - [ ] Export 규칙을 준수했는가?

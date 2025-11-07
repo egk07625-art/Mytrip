@@ -28,8 +28,79 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // 빌드 타임과 런타임 모두에서 환경 변수 접근 시도
+  // next.config.ts의 env 설정을 통해 주입된 환경 변수도 확인
+  const publishableKey =
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
+    (typeof window !== "undefined" ? (window as any).__NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY__ : undefined);
+
+  // 빌드 시점 환경 변수 디버깅 (빌드 로그에 출력됨)
+  // 이 로그는 반드시 빌드 로그에 나타나야 합니다
+  if (typeof window === "undefined") {
+    // 서버 사이드 (빌드 타임 포함)
+    const allEnvKeys = Object.keys(process.env);
+    const clerkEnvKeys = allEnvKeys.filter((key) => key.includes("CLERK"));
+    
+    console.error("[Layout] ========== ENVIRONMENT CHECK ==========");
+    console.error("[Layout] Server-side environment check:", {
+      hasPublishableKey: !!publishableKey,
+      keyPrefix: publishableKey?.substring(0, 10) || "NOT_SET",
+      keyLength: publishableKey?.length || 0,
+      nodeEnv: process.env.NODE_ENV,
+      isVercel: !!process.env.VERCEL,
+      vercelEnv: process.env.VERCEL_ENV || "N/A",
+      allEnvKeysCount: allEnvKeys.length,
+      clerkEnvKeys: clerkEnvKeys,
+      allClerkEnvVars: clerkEnvKeys.map((key) => ({
+        key,
+        hasValue: !!process.env[key],
+        valueLength: process.env[key]?.length || 0,
+      })),
+    });
+    console.error("[Layout] ========================================");
+  }
+
+  if (!publishableKey) {
+    // 빌드 시점에 더 자세한 정보 제공
+    const allEnvKeys = Object.keys(process.env);
+    const clerkEnvKeys = allEnvKeys.filter((key) => key.includes("CLERK"));
+    
+    const errorMessage = [
+      "❌ Missing NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+      "",
+      "📋 Debug Info:",
+      `  - NODE_ENV: ${process.env.NODE_ENV || "undefined"}`,
+      `  - VERCEL: ${process.env.VERCEL ? "true" : "false"}`,
+      `  - VERCEL_ENV: ${process.env.VERCEL_ENV || "undefined"}`,
+      `  - Total env vars: ${allEnvKeys.length}`,
+      `  - CLERK env vars found: ${clerkEnvKeys.length > 0 ? clerkEnvKeys.join(", ") : "none"}`,
+      ...(clerkEnvKeys.length > 0
+        ? clerkEnvKeys.map(
+            (key) =>
+              `  - ${key}: ${process.env[key] ? `exists (length: ${process.env[key]?.length})` : "undefined"}`
+          )
+        : []),
+      "",
+      "🔧 Solution:",
+      "  1. Go to Vercel Dashboard → Settings → Environment Variables",
+      "  2. Verify NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY exists",
+      "  3. Check Production AND Preview environments are selected",
+      "  4. Ensure value has no quotes or spaces",
+      "  5. Clear build cache and redeploy",
+      "",
+      "💡 If env var exists but still not found:",
+      "  - Check if it's set for the correct environment (Production/Preview)",
+      "  - Try deleting and re-adding the environment variable",
+      "  - Use Vercel CLI: vercel --prod --force",
+    ].join("\n");
+
+    // 에러를 throw하기 전에 로그 출력
+    console.error(errorMessage);
+    throw new Error(errorMessage);
+  }
+
   return (
-    <ClerkProvider localization={koKR}>
+    <ClerkProvider publishableKey={publishableKey} localization={koKR}>
       <html lang="ko">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}

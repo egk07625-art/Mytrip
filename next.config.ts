@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
       { hostname: "tong.visitkorea.or.kr" },
     ],
   },
+  // 빌드 타임에 환경 변수를 명시적으로 주입
+  env: {
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+  },
 };
 
 export default nextConfig;

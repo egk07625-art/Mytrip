@@ -84,7 +84,7 @@ export default function TourSearch({ className }: TourSearchProps) {
       console.log("[TourSearch] 검색 완료 - 로딩 상태 해제");
       setIsSearching(false);
     }
-  }, [currentKeyword]); // currentKeyword 변경 시 로딩 상태 해제
+  }, [currentKeyword, isSearching]); // currentKeyword 변경 시 로딩 상태 해제
 
   // 타임아웃 안전장치: 30초 후 자동으로 로딩 상태 해제
   useEffect(() => {

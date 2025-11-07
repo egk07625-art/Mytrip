@@ -1,16 +1,13 @@
-fix: Fix filter "전체" (All) option not working in search
+fix: Improve Vercel build-time environment variable handling for Clerk
 
-- Fixed bug where selecting "전체" (All) filter in search mode
-  would not return results from all regions
-- Modified areaCode handling logic in app/page.tsx:
-  - Search mode (with keyword): "전체" selection passes undefined
-    to fetchTourSearch, allowing search across all regions
-  - List mode (without keyword): "전체" selection defaults to "1"
-    (Seoul) to maintain existing behavior
-- Updated filter display logic to correctly show applied filters
-  for both search and list modes
-- Fixed contentTypeId handling to properly handle empty values
+- Add explicit env variable injection in next.config.ts for build-time access
+- Enhance environment variable debugging in app/layout.tsx with detailed logging
+- Add comprehensive error messages with debug info for missing env vars
+- Create troubleshooting guides for Vercel environment variable issues:
+  - docs/vercel-clerk-env-fix.md
+  - docs/vercel-env-build-time-fix.md
+  - docs/vercel-env-not-injected-fix.md
 
-This ensures that when users search with "전체" filter selected,
-they get results from all regions instead of being limited to
-Seoul (default areaCode "1").
+This addresses the issue where NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY was not
+available during build-time static generation, causing prerender errors
+for the not-found page.

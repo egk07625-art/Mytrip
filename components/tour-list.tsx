@@ -56,7 +56,7 @@ export default function TourList({ tours, searchKeyword, className }: TourListPr
       return (
         <div className={`flex flex-col items-center justify-center gap-4 p-12 text-center ${className || ""}`} role="status" aria-live="polite">
           <p className="text-lg text-gray-600 dark:text-gray-400">
-            <span className="font-medium">"{searchKeyword}"</span>에 대한 검색 결과가 없습니다.
+            <span className="font-medium">&quot;{searchKeyword}&quot;</span>에 대한 검색 결과가 없습니다.
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-500">
             다른 검색어를 입력하시거나 필터를 변경해보세요.
