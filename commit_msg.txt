@@ -1,24 +1,30 @@
-feat: Add tour detail intro and gallery sections
+feat: implement bookmark feature with sorting and bulk delete
 
-- Add fetchTourIntro API client function for detailIntro2 endpoint
-- Add fetchTourImages API client function for detailImage2 endpoint
-- Create DetailIntro component to display tour operation information
-  - Server Component with Suspense support
-  - Displays operating hours, closed days, parking, inquiry info, etc.
-  - Filters out empty fields dynamically
-- Create DetailGallery component for image gallery
-  - Client Component with modal interaction
-  - Responsive grid layout (1/2/3 columns for mobile/tablet/desktop)
-  - Fullscreen modal with image slider (prev/next buttons)
-  - Uses Next.js Image component for optimization
-- Integrate new sections into place detail page
-  - Add DetailIntro and DetailGallery sections with Suspense boundaries
-  - Implement loading skeleton UI for both sections
-  - Add error handling and empty state handling
-- Update page structure: Basic Info → Operation Info → Image Gallery
+- Add bookmark functionality with Supabase integration
+  - Create bookmark-button component for detail pages
+  - Implement bookmark API client with DB and localStorage support
+  - Add bookmark types and interfaces
 
-All components follow project guidelines:
-- Spacing-First policy (padding + gap, no margin)
-- Tailwind CSS only (no inline styles)
-- Dark mode support
-- Accessibility improvements (ARIA labels, keyboard navigation)
+- Implement bookmark list page (/bookmarks)
+  - Server Component for authenticated users (DB query)
+  - Client Component for unauthenticated users (localStorage)
+  - Parallel tour detail fetching with Promise.allSettled
+  - Loading skeleton and error handling
+
+- Add sorting functionality
+  - Sort by latest (created_at desc)
+  - Sort by name (title asc, Korean alphabetical order)
+  - Sort by region (addr1 based)
+  - URL parameter support (?sort=latest|name|region)
+  - Client-side sorting implementation
+
+- Implement bulk delete feature
+  - Checkbox selection for multiple bookmarks
+  - Select all / Deselect all functionality
+  - Bulk delete with confirmation dialog
+  - Auto refresh after deletion
+
+- Add Supabase migration guide and status docs
+- Update navbar with bookmark link
+- Add checkbox UI component (shadcn/ui)
+- Update TODO.md with completed bookmark features

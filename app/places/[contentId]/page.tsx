@@ -47,6 +47,7 @@ import DetailInfo from "@/components/tour-detail/detail-info";
 import DetailIntro from "@/components/tour-detail/detail-intro";
 import DetailGallery from "@/components/tour-detail/detail-gallery";
 import ShareButton from "@/components/tour-detail/share-button";
+import BookmarkButton from "@/components/bookmarks/bookmark-button";
 import ErrorMessageWithRetry from "@/components/error-message-with-retry";
 import {
   fetchTourDetail,
@@ -349,7 +350,7 @@ export default async function PlaceDetailPage({
 
     return (
       <main className="min-h-[calc(100vh-80px)]">
-        {/* 헤더 영역: 뒤로가기 버튼 + 페이지 제목 + 공유 버튼 */}
+        {/* 헤더 영역: 뒤로가기 버튼 + 페이지 제목 + 북마크 버튼 + 공유 버튼 */}
         <header className="w-full border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
           <div className="w-full max-w-7xl mx-auto flex items-center justify-between gap-4 px-4 py-4">
             <div className="flex items-center gap-4">
@@ -358,7 +359,10 @@ export default async function PlaceDetailPage({
                 관광지 상세
               </h1>
             </div>
-            <ShareButton />
+            <div className="flex items-center gap-2">
+              <BookmarkButton contentId={contentId} />
+              <ShareButton />
+            </div>
           </div>
         </header>
 
