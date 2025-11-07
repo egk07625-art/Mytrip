@@ -61,6 +61,7 @@ const ENDPOINT_CONFIG = {
   searchKeyword: {
     path: "/searchKeyword2",
     requiredParams: ["serviceKey", "MobileOS", "MobileApp", "keyword"],
+    optionalParams: ["areaCode", "contentTypeId"], // 검색과 필터 조합 지원
   },
   detailCommon: {
     path: "/detailCommon2",
@@ -151,11 +152,38 @@ export async function GET(request: NextRequest) {
     // 엔드포인트별 선택적 파라미터도 포함 (config에 optionalParams가 있으면)
     const endpointOptionalParams = (config as any).optionalParams || [];
     const optionalParams = ["numOfRows", "pageNo", "sigunguCode", ...endpointOptionalParams];
+    
+    // 선택적 파라미터 처리 로깅 (특히 searchKeyword 엔드포인트의 필터 파라미터)
+    if (endpoint === "searchKeyword") {
+      console.log("[Tour API] Optional params config:", {
+        endpointOptionalParams,
+        allOptionalParams: optionalParams,
+      });
+    }
+    
+    const addedOptionalParams: string[] = [];
     for (const param of optionalParams) {
       const value = searchParams.get(param);
       if (value) {
         apiParams.append(param, value);
+        addedOptionalParams.push(param);
+        
+        // searchKeyword 엔드포인트의 필터 파라미터는 별도 로깅
+        if (endpoint === "searchKeyword" && (param === "areaCode" || param === "contentTypeId")) {
+          console.log(`[Tour API] Added filter param: ${param} = ${value}`);
+        }
       }
+    }
+    
+    // searchKeyword 엔드포인트의 필터 파라미터 처리 결과 요약
+    if (endpoint === "searchKeyword") {
+      const hasAreaFilter = addedOptionalParams.includes("areaCode");
+      const hasTypeFilter = addedOptionalParams.includes("contentTypeId");
+      console.log("[Tour API] Filter params summary:", {
+        hasAreaFilter,
+        hasTypeFilter,
+        allAddedOptionalParams: addedOptionalParams,
+      });
     }
 
     // API 호출
@@ -170,6 +198,20 @@ export async function GET(request: NextRequest) {
         [key, key === 'serviceKey' ? '***' : value]
       )
     ));
+    
+    // searchKeyword 엔드포인트의 경우 필터 파라미터 확인
+    if (endpoint === "searchKeyword") {
+      const keyword = apiParams.get("keyword");
+      const areaCode = apiParams.get("areaCode");
+      const contentTypeId = apiParams.get("contentTypeId");
+      console.log("[Tour API] Search params verification:", {
+        keyword: keyword || "(missing)",
+        areaCode: areaCode || "(not applied)",
+        contentTypeId: contentTypeId || "(not applied)",
+        hasFilters: Boolean(areaCode || contentTypeId),
+      });
+    }
+    
     console.log("API Key exists:", !!getTourApiKey());
     console.log("API Key length:", getTourApiKey().length);
 

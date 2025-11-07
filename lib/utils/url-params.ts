@@ -59,7 +59,7 @@ export function updateUrlParam({
   key,
   value,
   currentParams,
-  preserveKeys = ["keyword", "areaCode", "contentTypeId"],
+  preserveKeys = ["keyword", "areaCode", "contentTypeId", "sort", "page"],
 }: UpdateUrlParamsOptions): string {
   // URLSearchParams 객체 생성
   const params =
@@ -74,8 +74,9 @@ export function updateUrlParam({
     params.delete(key);
   }
 
-  // 페이지 번호 초기화 (필터/검색 변경 시)
-  if (preserveKeys.includes(key) && key !== "pageNo") {
+  // 페이지 번호 초기화 (필터/검색 변경 시, 단 page 파라미터 자체 변경 시는 제외)
+  if (preserveKeys.includes(key) && key !== "page" && key !== "pageNo") {
+    params.delete("page");
     params.delete("pageNo");
   }
 
@@ -120,8 +121,9 @@ export function updateUrlParams({
     }
   });
 
-  // 페이지 번호 초기화
-  if (Object.keys(updates).some((key) => key !== "pageNo")) {
+  // 페이지 번호 초기화 (page 파라미터 자체 변경 시는 제외)
+  if (Object.keys(updates).some((key) => key !== "page" && key !== "pageNo")) {
+    params.delete("page");
     params.delete("pageNo");
   }
 

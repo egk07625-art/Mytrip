@@ -1,28 +1,16 @@
-feat: Improve UX for tour list page (Phase 2.3)
+fix: Fix filter "전체" (All) option not working in search
 
-- Add loading skeleton UI when filters change
-  - Create TourListSkeleton component matching TourCard layout
-  - Add TourListWrapper with useTransition for smooth loading state
-  - Integrate Suspense boundary in page.tsx
+- Fixed bug where selecting "전체" (All) filter in search mode
+  would not return results from all regions
+- Modified areaCode handling logic in app/page.tsx:
+  - Search mode (with keyword): "전체" selection passes undefined
+    to fetchTourSearch, allowing search across all regions
+  - List mode (without keyword): "전체" selection defaults to "1"
+    (Seoul) to maintain existing behavior
+- Updated filter display logic to correctly show applied filters
+  for both search and list modes
+- Fixed contentTypeId handling to properly handle empty values
 
-- Enhance accessibility in TourFilters
-  - Add role="region" and aria-label to main container
-  - Add role="group" and aria-labelledby to filter groups
-  - Add descriptive aria-label to each filter button
-  - Add screen reader only description text
-
-- Optimize responsive design
-  - Improve grid gap spacing: gap-4 md:gap-5 lg:gap-6
-  - Optimize filter button group spacing: gap-2 sm:gap-3
-  - Apply consistent spacing to skeleton component
-
-- Improve error and empty state messages
-  - Update empty state message to be more user-friendly
-  - Enhance error message copy with more specific guidance
-  - Create ErrorMessageWithRetry component with reload functionality
-  - Add retry button to error messages
-
-- Add URL parameter preservation utilities
-  - Create lib/utils/url-params.ts with utility functions
-  - Update TourFilters to preserve search keyword parameter
-  - Ensure filter and search parameters maintain consistency
+This ensures that when users search with "전체" filter selected,
+they get results from all regions instead of being limited to
+Seoul (default areaCode "1").

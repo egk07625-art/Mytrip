@@ -27,7 +27,7 @@
  * ```
  */
 
-import type { AreaCode, ApiResponse } from "@/lib/types/tour";
+import type { AreaCode, ApiResponse, TourDetail } from "@/lib/types/tour";
 
 /**
  * 기본 지역 목록 (API 실패 시 사용)
@@ -149,6 +149,91 @@ export async function fetchAreaCodes(): Promise<AreaCode[]> {
     console.groupEnd();
     // 에러 발생 시 기본 지역 목록 반환
     return DEFAULT_AREA_CODES;
+  }
+}
+
+/**
+ * 관광지 상세 정보를 가져오는 함수
+ * @param contentId - 관광지 콘텐츠 ID
+ * @returns TourDetail 객체 또는 null (API 실패 시)
+ */
+export async function fetchTourDetail(
+  contentId: string
+): Promise<TourDetail | null> {
+  try {
+    console.group("[Tour API Client] Fetching tour detail");
+    console.log("Content ID:", contentId);
+
+    // Server Component에서 내부 API 호출 시 절대 URL 필요
+    const headersList = await import("next/headers").then((m) => m.headers());
+    const host = headersList.get("host");
+    const protocol = headersList.get("x-forwarded-proto") || "https";
+
+    // baseUrl 결정 로직
+    let baseUrl: string;
+    if (host) {
+      baseUrl = `${protocol}://${host}`;
+    } else if (process.env.NEXT_PUBLIC_APP_URL) {
+      baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+    } else if (process.env.VERCEL_URL) {
+      baseUrl = `https://${process.env.VERCEL_URL}`;
+    } else {
+      baseUrl = "http://localhost:3000";
+    }
+
+    console.log("[Tour API Client] Base URL:", baseUrl);
+
+    const apiUrl = new URL("/api/tour", baseUrl);
+    apiUrl.searchParams.set("endpoint", "detailCommon");
+    apiUrl.searchParams.set("contentId", contentId);
+
+    console.log("[Tour API Client] API URL:", apiUrl.toString());
+
+    const response = await fetch(apiUrl.toString(), {
+      next: {
+        revalidate: 3600, // 1시간 캐싱
+      },
+      headers: {
+        "x-forwarded-host": host || "",
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error("[Tour API Client] API Error:", response.status, errorData);
+      console.groupEnd();
+      return null;
+    }
+
+    const data: ApiResponse<TourDetail> = await response.json();
+
+    // API 응답 구조 확인
+    if (data.response?.header?.resultCode !== "0000") {
+      const resultMsg = data.response?.header?.resultMsg || "Unknown error";
+      console.error("[Tour API Client] API Error Response:", resultMsg);
+      console.groupEnd();
+      return null;
+    }
+
+    // items.item이 배열인지 단일 객체인지 확인
+    const items = data.response?.body?.items?.item;
+    const tourDetail: TourDetail | null = Array.isArray(items)
+      ? items[0] || null
+      : items || null;
+
+    if (tourDetail) {
+      console.log("[Tour API Client] Success: Tour detail loaded");
+      console.log("[Tour API Client] Title:", tourDetail.title);
+    } else {
+      console.warn("[Tour API Client] No tour detail found");
+    }
+
+    console.groupEnd();
+    return tourDetail;
+  } catch (error) {
+    console.error("[Tour API Client] Error fetching tour detail:", error);
+    console.groupEnd();
+    return null;
   }
 }
 

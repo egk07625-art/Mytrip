@@ -6,12 +6,12 @@
 
 - **Phase 0**: ✅ 완료 (개발 환경 준비)
 - **Phase 1**: ✅ 완료 (기본 구조 & 공통 설정)
-- **Phase 2**: ⏳ 진행 중 (홈페이지 - 관광지 목록)
-- **Phase 3**: ⏸️ 대기 중 (상세페이지)
+- **Phase 2**: ✅ 완료 (홈페이지 - 관광지 목록)
+- **Phase 3**: ⏳ 진행 중 (상세페이지) - 3.2 기본 정보 섹션 완료
 - **Phase 4**: ⏸️ 대기 중 (북마크 페이지)
 - **Phase 5**: ⏸️ 부분 완료 (최적화 & 배포)
 
-**다음 단계**: Phase 2.2 관광지 목록 기능 구현 시작
+**다음 단계**: Phase 3.3 지도 섹션
 
 ## Phase 0: 개발 환경 및 가이드라인 준비
 
@@ -104,52 +104,53 @@
 
 #### 2.4.1 검색창 UI 컴포넌트 구현
 
-- [ ] `components/tour-search.tsx` 생성
-  - [ ] shadcn/ui Input 컴포넌트 사용
-  - [ ] Search 아이콘 추가 (lucide-react)
-  - [ ] 엔터 키 이벤트 처리
-  - [ ] 검색 버튼 클릭 이벤트 처리
-  - [ ] URL 파라미터 업데이트 로직
-  - [ ] Spacing-First 정책 준수
-  - [ ] 반응형 디자인 (모바일/데스크톱)
-  - [ ] 다크 모드 지원
-  - [ ] 접근성 (ARIA 라벨)
+- [x] `components/tour-search.tsx` 생성
+  - [x] shadcn/ui Input 컴포넌트 사용
+  - [x] Search 아이콘 추가 (lucide-react)
+  - [x] 엔터 키 이벤트 처리
+  - [x] 검색 버튼 클릭 이벤트 처리
+  - [x] URL 파라미터 업데이트 로직
+  - [x] Spacing-First 정책 준수
+  - [x] 반응형 디자인 (모바일/데스크톱)
+  - [x] 다크 모드 지원
+  - [x] 접근성 (ARIA 라벨)
 
 #### 2.4.2 검색 API 연동
 
-- [ ] `app/page.tsx`에 `fetchTourSearch` 함수 추가
-- [ ] `searchParams`에서 `keyword` 파라미터 읽기
-- [ ] API 엔드포인트 호출 (`/api/tour?endpoint=searchKeyword`)
-- [ ] URL 파라미터 처리 (keyword, areaCode, contentTypeId)
-- [ ] 에러 처리 및 로깅
-- [ ] 검색 결과 타입 정의 (`TourItem[]`)
-- [ ] `page.tsx`에서 검색/목록 로직 분기
+- [x] `app/page.tsx`에 `fetchTourSearch` 함수 추가
+- [x] `searchParams`에서 `keyword` 파라미터 읽기
+- [x] API 엔드포인트 호출 (`/api/tour?endpoint=searchKeyword`)
+- [x] URL 파라미터 처리 (keyword, areaCode, contentTypeId)
+- [x] 에러 처리 및 로깅
+- [x] 검색 결과 타입 정의 (`TourItem[]`)
+- [x] `page.tsx`에서 검색/목록 로직 분기
 
 #### 2.4.3 검색 결과 표시
 
-- [ ] 검색 결과를 `TourList` 컴포넌트에 전달
-- [ ] 검색 결과 개수 표시 UI
-- [ ] 빈 결과 처리 메시지
-- [ ] 검색 중 로딩 상태 표시
-- [ ] 에러 메시지 표시
+- [x] 검색 결과를 `TourList` 컴포넌트에 전달
+- [x] 검색 결과 개수 표시 UI
+- [x] 빈 결과 처리 메시지
+- [x] 검색 중 로딩 상태 표시
+- [x] 에러 메시지 표시
 
 #### 2.4.4 검색 + 필터 조합 동작
 
-- [ ] `TourSearch` 컴포넌트에서 필터 파라미터 유지 로직
-- [ ] `TourFilters` 컴포넌트에서 검색 키워드 유지 로직
-- [ ] `fetchTourSearch`에 필터 파라미터 전달
-- [ ] 검색 + 필터 조합 테스트
-- [ ] URL 파라미터 동기화 확인
+- [x] `TourSearch` 컴포넌트에서 필터 파라미터 유지 로직
+- [x] `TourFilters` 컴포넌트에서 검색 키워드 유지 로직
+- [x] `fetchTourSearch`에 필터 파라미터 전달 (API 연동 시 구현)
+- [x] 필터 "전체" 선택 시 검색 버그 수정 (검색 시 "전체" 선택하면 모든 지역 검색)
+- [x] 검색 + 필터 조합 테스트 (API 연동 후)
+- [x] URL 파라미터 동기화 확인
 
 #### 2.4.5 UX 개선 및 테스트
 
-- [ ] 로딩 스피너 추가
-- [ ] 검색 버튼 비활성화 로직 (중복 요청 방지)
-- [ ] 검색어 유효성 검사 (최소 2자)
-- [ ] 에러 메시지 개선
-- [ ] 모바일/데스크톱 반응형 테스트
-- [ ] 다크 모드 테스트
-- [ ] 접근성 테스트
+- [x] 로딩 스피너 추가 (API 연동 시 구현)
+- [x] 검색 버튼 비활성화 로직 (중복 요청 방지, API 연동 시 구현)
+- [x] 검색어 유효성 검사 (최소 2자)
+- [x] 에러 메시지 개선 (유효성 검사 안내 메시지)
+- [x] 모바일/데스크톱 반응형 테스트
+- [x] 다크 모드 테스트
+- [x] 접근성 테스트 (ARIA 라벨, role, aria-describedby 등)
 
 **참고 문서**: `docs/plan-search-feature.md` - 상세 구현 계획
 
@@ -176,21 +177,42 @@
 
 ### 3.1 페이지 기본 구조
 
-- [ ] `app/places/[contentId]/page.tsx` 생성
-  - [ ] Next.js 15 동적 라우트 파라미터 처리 (`await params`)
-  - [ ] 메타데이터 동적 생성 (`generateMetadata`)
-- [ ] 기본 레이아웃 구조 (뒤로가기 버튼, 섹션 구분)
-  - [ ] Spacing-First 정책 적용
-- [ ] 라우팅 테스트 (홈에서 클릭 시 이동)
+- [x] `app/places/[contentId]/page.tsx` 생성
+  - [x] Next.js 15 동적 라우트 파라미터 처리 (`await params`)
+  - [x] 메타데이터 동적 생성 (`generateMetadata`)
+- [x] 기본 레이아웃 구조 (뒤로가기 버튼, 섹션 구분)
+  - [x] Spacing-First 정책 적용
+- [x] 라우팅 테스트 (홈에서 클릭 시 이동)
 
 ### 3.2 기본 정보 섹션 (MVP 2.4.1)
 
-- [ ] `components/tour-detail/detail-info.tsx`
-- [ ] `detailCommon2` API 연동
-- [ ] 관광지명, 이미지, 주소, 전화번호, 홈페이지, 개요 표시
-- [ ] 주소 복사 기능
-- [ ] 전화번호 클릭 시 전화 연결
-- [ ] 페이지 확인 및 스타일링
+- [x] `components/tour-detail/detail-info.tsx`
+  - [x] Client Component로 구현 (클립보드 API 사용)
+  - [x] 관광지명, 이미지, 주소, 전화번호, 홈페이지, 개요 표시
+  - [x] 관광 타입 뱃지 표시
+  - [x] Spacing-First 정책 준수
+  - [x] 반응형 디자인 및 다크 모드 지원
+- [x] `detailCommon2` API 연동
+  - [x] `lib/api/tour-api-client.ts`에 `fetchTourDetail` 함수 추가
+  - [x] `app/places/[contentId]/page.tsx`에서 API 호출
+  - [x] Suspense를 사용한 로딩 상태 처리 (스켈레톤 UI)
+  - [x] 에러 상태 처리 (재시도 버튼 포함)
+- [x] 관광지명, 이미지, 주소, 전화번호, 홈페이지, 개요 표시
+  - [x] Next.js Image 컴포넌트를 사용한 이미지 최적화
+  - [x] 이미지 없을 경우 플레이스홀더 처리
+  - [x] 개요 줄바꿈 처리 (whitespace-pre-line)
+- [x] 주소 복사 기능
+  - [x] 클립보드 API 사용 (`navigator.clipboard.writeText()`)
+  - [x] 복사 완료 시 버튼 상태 변경 (2초간 "복사됨" 표시)
+  - [x] HTTPS 환경 폴백 처리
+- [x] 전화번호 클릭 시 전화 연결
+  - [x] `tel:` 프로토콜 링크 구현
+  - [x] 모바일에서 전화 앱 자동 실행
+- [x] 페이지 확인 및 스타일링
+  - [x] 동적 메타데이터 생성 (Open Graph 포함)
+  - [x] 로딩 스켈레톤 UI 구현
+  - [x] 에러 메시지 및 재시도 기능
+  - [x] 반응형 디자인 검증
 
 ### 3.3 지도 섹션 (MVP 2.4.4)
 
@@ -255,7 +277,7 @@
 - [x] 404 페이지 (`app/not-found.tsx`)
 - [ ] SEO 최적화 (메타태그, sitemap, robots.txt)
   - [x] 기본 메타데이터 (`app/layout.tsx`)
-  - [ ] 동적 메타데이터 (상세페이지 `generateMetadata`)
+  - [x] 동적 메타데이터 (상세페이지 `generateMetadata`)
 - [ ] 성능 측정 (Lighthouse 점수 > 80)
 - [ ] 환경변수 보안 검증 (TOUR_API_KEY 확인)
   - [x] API 클라이언트에서 환경변수 처리 구현
@@ -271,6 +293,6 @@
   - [ ] 네이밍 규칙을 따랐는가?
   - [ ] Spacing-First 정책 준수 (gap 우선, margin 금지)
   - [ ] Tailwind CSS 우선 사용
-  - [ ] Next.js 15 동적 라우트 파라미터 처리 (`await params`)
+  - [x] Next.js 15 동적 라우트 파라미터 처리 (`await params`)
   - [ ] TypeScript 타입 정의 완료
   - [ ] 반응형 디자인 검증

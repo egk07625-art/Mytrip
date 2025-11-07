@@ -117,3 +117,5 @@ pnpm dev
 - [Next.js 환경 변수](https://nextjs.org/docs/app/building-your-application/configuring/environment-variables)
 - [Supabase RLS 가이드](https://supabase.com/docs/guides/auth/row-level-security)
 
+
+

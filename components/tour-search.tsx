@@ -11,12 +11,16 @@
  * 3. 검색어 초기화 버튼
  * 4. URL 파라미터 기반 상태 관리
  * 5. 필터 파라미터 유지 (areaCode, contentTypeId)
+ * 6. 로딩 상태 표시 (검색 중 스피너)
+ * 7. 중복 요청 방지 (검색 버튼 비활성화)
  *
  * 핵심 구현 로직:
  * - useRouter와 useSearchParams로 URL 파라미터 관리
  * - 검색 실행 시 URL 업데이트하여 페이지 재렌더링
  * - 검색어 유효성 검사 (최소 2자)
  * - URL 파라미터와 입력값 자동 동기화
+ * - 로딩 상태 관리 (isSearching) 및 타임아웃 안전장치
+ * - 중복 요청 방지 로직
  * - Spacing-First 정책 준수 (gap 사용, margin 금지)
  * - Tailwind CSS만 사용 (인라인 style 금지)
  * - 반응형 디자인 (모바일 퍼스트)
@@ -25,6 +29,7 @@
  * - next/navigation: useRouter, useSearchParams
  * - @/components/ui/input: Input 컴포넌트
  * - @/components/ui/button: Button 컴포넌트
+ * - @/components/ui/loading-spinner: LoadingSpinner 컴포넌트
  * - lucide-react: Search, X 아이콘
  * - @/lib/utils/url-params: updateUrlParam 함수
  *
@@ -37,11 +42,12 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect, useCallback, useTransition } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Search, X } from "lucide-react";
 import { updateUrlParam } from "@/lib/utils/url-params";
-import { useState, useEffect, useCallback } from "react";
 
 interface TourSearchProps {
   className?: string;
@@ -54,6 +60,7 @@ interface TourSearchProps {
 export default function TourSearch({ className }: TourSearchProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
   // 현재 검색 키워드 가져오기
   const currentKeyword = searchParams.get("keyword") || "";
@@ -61,17 +68,51 @@ export default function TourSearch({ className }: TourSearchProps) {
   // 로컬 입력값 상태 (URL 파라미터와 동기화)
   const [inputValue, setInputValue] = useState(currentKeyword);
 
+  // 로딩 상태 관리 (검색 실행 중 여부)
+  const [isSearching, setIsSearching] = useState(false);
+
   // URL 파라미터 변경 시 입력값 동기화
   useEffect(() => {
     setInputValue(currentKeyword);
   }, [currentKeyword]);
 
+  // URL 파라미터 변경 감지: 검색이 완료되었음을 의미 (로딩 상태 해제)
+  // 검색어가 변경되었거나 비어있을 때 로딩 상태 해제
+  useEffect(() => {
+    if (isSearching) {
+      // URL 파라미터가 변경되었으므로 검색이 완료된 것으로 간주
+      console.log("[TourSearch] 검색 완료 - 로딩 상태 해제");
+      setIsSearching(false);
+    }
+  }, [currentKeyword]); // currentKeyword 변경 시 로딩 상태 해제
+
+  // 타임아웃 안전장치: 30초 후 자동으로 로딩 상태 해제
+  useEffect(() => {
+    if (!isSearching) return;
+
+    const timeout = setTimeout(() => {
+      console.warn("[TourSearch] 로딩 타임아웃 - 상태 해제");
+      setIsSearching(false);
+    }, 30000); // 30초 타임아웃
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [isSearching]);
+
   /**
    * 검색 실행 함수
    * 검색어 유효성 검사 후 URL 파라미터 업데이트
+   * 중복 요청 방지 및 로딩 상태 관리 포함
    */
   const handleSearch = useCallback(
     (keyword: string) => {
+      // 중복 요청 방지: 이미 검색 중이면 스킵
+      if (isSearching) {
+        console.log("[TourSearch] 이미 검색 중입니다. 중복 요청을 무시합니다.");
+        return;
+      }
+
       // 공백 제거 및 검증
       const trimmedKeyword = keyword.trim();
 
@@ -83,7 +124,11 @@ export default function TourSearch({ className }: TourSearchProps) {
           currentParams: searchParams,
           preserveKeys: ["keyword", "areaCode", "contentTypeId"],
         });
-        router.push(`/?${newParams}`);
+        const newUrl = newParams ? `/?${newParams}` : "/";
+        // Next.js 15: router.replace를 startTransition으로 감싸서 즉시 URL 업데이트
+        startTransition(() => {
+          router.replace(newUrl);
+        });
         return;
       }
 
@@ -92,6 +137,15 @@ export default function TourSearch({ className }: TourSearchProps) {
         console.log("[TourSearch] 검색어는 최소 2자 이상 입력해주세요.");
         return;
       }
+
+      // 동일한 검색어인 경우 스킵 (중복 요청 방지)
+      if (trimmedKeyword === currentKeyword) {
+        console.log("[TourSearch] 동일한 검색어입니다. 요청을 스킵합니다.");
+        return;
+      }
+
+      // 로딩 상태 시작
+      setIsSearching(true);
 
       // URL 파라미터 업데이트 (필터 파라미터 유지)
       const newParams = updateUrlParam({
@@ -104,11 +158,19 @@ export default function TourSearch({ className }: TourSearchProps) {
       console.group("[TourSearch] 검색 실행");
       console.log("검색어:", trimmedKeyword);
       console.log("URL 파라미터:", newParams);
+      console.log("로딩 상태: 시작");
+      console.log("router.replace 호출 전");
       console.groupEnd();
 
-      router.push(`/?${newParams}`);
+      // URL 업데이트 (Next.js 15: router.replace를 startTransition으로 감싸서 즉시 URL 업데이트)
+      const targetUrl = `/?${newParams}`;
+      console.log("[TourSearch] router.replace 호출:", targetUrl);
+      startTransition(() => {
+        router.replace(targetUrl);
+      });
+      console.log("[TourSearch] router.replace 호출 완료");
     },
-    [router, searchParams]
+    [router, searchParams, isSearching, currentKeyword, startTransition]
   );
 
   /**
@@ -125,6 +187,7 @@ export default function TourSearch({ className }: TourSearchProps) {
    * 검색 버튼 클릭 이벤트 처리
    */
   const handleSearchClick = () => {
+    console.log("[TourSearch] 검색 버튼 클릭", { inputValue, currentKeyword });
     handleSearch(inputValue);
   };
 
@@ -134,11 +197,19 @@ export default function TourSearch({ className }: TourSearchProps) {
    */
   const handleReset = () => {
     setInputValue("");
+    setIsSearching(false); // 초기화 시 로딩 상태도 해제
     handleSearch("");
   };
 
   // 검색어가 있는지 확인
   const hasKeyword = Boolean(currentKeyword);
+
+  // 검색 버튼 비활성화 조건
+  const isButtonDisabled =
+    isSearching || // 검색 실행 중
+    isPending || // 네비게이션 진행 중
+    inputValue.trim().length < 2 || // 검색어 유효성 검사 실패
+    inputValue.trim() === currentKeyword; // 동일한 검색어
 
   return (
     <div
@@ -190,10 +261,12 @@ export default function TourSearch({ className }: TourSearchProps) {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
+              disabled={isSearching || isPending}
               className="w-full pr-10"
               aria-label="검색어 입력"
               aria-describedby="search-description search-input-label"
               aria-invalid={inputValue.trim().length > 0 && inputValue.trim().length < 2}
+              aria-busy={isSearching || isPending}
             />
             {/* 검색 아이콘 (입력창 내부) */}
             <Search
@@ -205,12 +278,20 @@ export default function TourSearch({ className }: TourSearchProps) {
           {/* 검색 버튼 */}
           <Button
             onClick={handleSearchClick}
+            disabled={isButtonDisabled}
             className="shrink-0"
-            aria-label="검색 실행"
+            aria-label={isSearching || isPending ? "검색 중..." : "검색 실행"}
             aria-describedby="search-description"
+            aria-busy={isSearching || isPending}
           >
-            <Search className="size-4" aria-hidden="true" />
-            <span className="hidden sm:inline">검색</span>
+            {isSearching || isPending ? (
+              <LoadingSpinner size="sm" className="text-white" />
+            ) : (
+              <Search className="size-4" aria-hidden="true" />
+            )}
+            <span className="hidden sm:inline">
+              {isSearching || isPending ? "검색 중..." : "검색"}
+            </span>
           </Button>
         </div>
 

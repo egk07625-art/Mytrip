@@ -145,4 +145,17 @@ export interface Coordinate {
   lat: number; // 위도 (WGS84)
 }
 
+/**
+ * 정렬 옵션 타입
+ */
+export type SortOption = "latest" | "name";
+
+/**
+ * 정렬 옵션 라벨 매핑
+ */
+export const SORT_OPTION_LABEL: Record<SortOption, string> = {
+  latest: "최신순",
+  name: "이름순",
+};
+
 
