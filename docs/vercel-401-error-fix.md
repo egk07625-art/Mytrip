@@ -51,7 +51,7 @@ git push
 Vercel 대시보드에서 배포 URL을 확인한 후, 다음 환경변수도 설정하는 것을 권장합니다:
 
 ```
-NEXT_PUBLIC_APP_URL=https://your-project.vercel.app
+NEXT_PUBLIC_APP_URL=https://mytrip-eight.vercel.app/
 ```
 
 이렇게 하면 Server Component에서 내부 API 호출 시 baseUrl 결정이 더 안정적입니다.

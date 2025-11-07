@@ -459,11 +459,10 @@ export default async function Home({ searchParams }: HomeProps) {
           <div className="flex flex-col gap-4">
             {/* 검색 영역 */}
             <TourSearch />
-            {/* 필터 및 정렬 영역 */}
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
-              <div className="flex-1">
-                <TourFilters areaCodes={areaCodes} />
-              </div>
+            {/* 필터 영역 */}
+            <TourFilters areaCodes={areaCodes} />
+            {/* 정렬 영역 */}
+            <div className="self-end">
               <TourSort />
             </div>
           </div>

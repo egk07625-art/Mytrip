@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import Navbar from "@/components/navbar";
 import { SyncUserProvider } from "@/components/providers/sync-user-provider";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -34,15 +35,15 @@ export default function RootLayout({
     process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
     (typeof window !== "undefined" ? (window as any).__NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY__ : undefined);
 
-  // 빌드 시점 환경 변수 디버깅 (빌드 로그에 출력됨)
-  // 이 로그는 반드시 빌드 로그에 나타나야 합니다
-  if (typeof window === "undefined") {
-    // 서버 사이드 (빌드 타임 포함)
+  // 빌드 시점 환경 변수 디버깅 (개발 환경에서만 출력)
+  // 프로덕션에서는 보안상 상세 로그를 출력하지 않음
+  if (typeof window === "undefined" && process.env.NODE_ENV === "development") {
+    // 서버 사이드 (빌드 타임 포함) - 개발 환경에서만
     const allEnvKeys = Object.keys(process.env);
     const clerkEnvKeys = allEnvKeys.filter((key) => key.includes("CLERK"));
     
-    console.error("[Layout] ========== ENVIRONMENT CHECK ==========");
-    console.error("[Layout] Server-side environment check:", {
+    console.log("[Layout] ========== ENVIRONMENT CHECK ==========");
+    console.log("[Layout] Server-side environment check:", {
       hasPublishableKey: !!publishableKey,
       keyPrefix: publishableKey?.substring(0, 10) || "NOT_SET",
       keyLength: publishableKey?.length || 0,
@@ -57,7 +58,7 @@ export default function RootLayout({
         valueLength: process.env[key]?.length || 0,
       })),
     });
-    console.error("[Layout] ========================================");
+    console.log("[Layout] ========================================");
   }
 
   if (!publishableKey) {
@@ -94,7 +95,7 @@ export default function RootLayout({
       "  - Use Vercel CLI: vercel --prod --force",
     ].join("\n");
 
-    // 에러를 throw하기 전에 로그 출력
+    // 에러를 throw하기 전에 로그 출력 (프로덕션에서도 출력)
     console.error(errorMessage);
     throw new Error(errorMessage);
   }
@@ -108,6 +109,7 @@ export default function RootLayout({
           <SyncUserProvider>
             <Navbar />
             {children}
+            <Toaster />
           </SyncUserProvider>
         </body>
       </html>

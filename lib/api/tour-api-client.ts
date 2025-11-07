@@ -27,11 +27,42 @@
  * ```
  */
 
-import type { AreaCode, ApiResponse, TourDetail } from "@/lib/types/tour";
+import type {
+  AreaCode,
+  ApiResponse,
+  TourDetail,
+  TourIntro,
+  TourImage,
+} from "@/lib/types/tour";
+
+/**
+ * 지역코드별 정식 명칭 매핑
+ * API 응답의 지역명을 정식 명칭으로 변환하기 위한 맵
+ */
+const AREA_CODE_NAME_MAP: Record<string, string> = {
+  "1": "서울",
+  "2": "인천",
+  "3": "대전",
+  "4": "대구",
+  "5": "광주",
+  "6": "부산",
+  "7": "울산",
+  "8": "세종특별자치시",
+  "31": "경기도",
+  "32": "강원특별자치도",
+  "33": "충청북도",
+  "34": "충청남도",
+  "35": "전라북도",
+  "36": "전라남도",
+  "37": "경상북도",
+  "38": "경상남도",
+  "39": "제주특별자치도",
+};
 
 /**
  * 기본 지역 목록 (API 실패 시 사용)
  * 한국관광공사 공공 API의 지역코드 기준
+ * 한국의 모든 시/도 포함 (총 17개)
  */
 const DEFAULT_AREA_CODES: AreaCode[] = [
   { code: "1", name: "서울" },
@@ -41,16 +72,16 @@ const DEFAULT_AREA_CODES: AreaCode[] = [
   { code: "5", name: "광주" },
   { code: "6", name: "부산" },
   { code: "7", name: "울산" },
-  { code: "8", name: "세종" },
-  { code: "31", name: "경기" },
-  { code: "32", name: "강원" },
-  { code: "33", name: "충북" },
-  { code: "34", name: "충남" },
-  { code: "35", name: "전북" },
-  { code: "36", name: "전남" },
-  { code: "37", name: "경북" },
-  { code: "38", name: "경남" },
-  { code: "39", name: "제주" },
+  { code: "8", name: "세종특별자치시" },
+  { code: "31", name: "경기도" },
+  { code: "32", name: "강원특별자치도" },
+  { code: "33", name: "충청북도" },
+  { code: "34", name: "충청남도" },
+  { code: "35", name: "전라북도" },
+  { code: "36", name: "전라남도" },
+  { code: "37", name: "경상북도" },
+  { code: "38", name: "경상남도" },
+  { code: "39", name: "제주특별자치도" },
 ];
 
 /**
@@ -127,8 +158,32 @@ export async function fetchAreaCodes(): Promise<AreaCode[]> {
         ? [items]
         : [];
 
+    // API 응답의 지역명을 정식 명칭으로 변환하고, 누락된 지역 추가
+    const normalizedAreaCodes: AreaCode[] = [];
+    const apiAreaCodeMap = new Map<string, AreaCode>();
+    
+    // API 응답을 맵으로 변환
+    areaCodes.forEach((area) => {
+      apiAreaCodeMap.set(area.code, area);
+    });
+
+    // 모든 지역코드에 대해 정식 명칭으로 변환
+    DEFAULT_AREA_CODES.forEach((defaultArea) => {
+      const apiArea = apiAreaCodeMap.get(defaultArea.code);
+      if (apiArea) {
+        // API 응답이 있으면 정식 명칭으로 변환
+        normalizedAreaCodes.push({
+          code: apiArea.code,
+          name: AREA_CODE_NAME_MAP[apiArea.code] || apiArea.name,
+        });
+      } else {
+        // API 응답에 없는 지역은 기본 목록에서 추가
+        normalizedAreaCodes.push(defaultArea);
+      }
+    });
+
     // 정렬: 지역코드 순서대로 (코드를 숫자로 변환하여 정렬)
-    areaCodes.sort((a, b) => {
+    normalizedAreaCodes.sort((a, b) => {
       const codeA = parseInt(a.code, 10);
       const codeB = parseInt(b.code, 10);
       return codeA - codeB;
@@ -136,13 +191,13 @@ export async function fetchAreaCodes(): Promise<AreaCode[]> {
 
     console.log(
       "[Tour API Client] Success:",
-      areaCodes.length,
-      "area codes loaded"
+      normalizedAreaCodes.length,
+      "area codes loaded (normalized)"
     );
     console.groupEnd();
 
-    // API 성공 시 결과 반환, 빈 배열인 경우 기본 목록 반환
-    return areaCodes.length > 0 ? areaCodes : DEFAULT_AREA_CODES;
+    // API 성공 시 정규화된 결과 반환
+    return normalizedAreaCodes;
   } catch (error) {
     console.error("[Tour API Client] Error fetching area codes:", error);
     console.log("[Tour API Client] Using default area codes as fallback");
@@ -234,6 +289,189 @@ export async function fetchTourDetail(
     console.error("[Tour API Client] Error fetching tour detail:", error);
     console.groupEnd();
     return null;
+  }
+}
+
+/**
+ * 관광지 운영 정보를 가져오는 함수
+ * @param contentId - 관광지 콘텐츠 ID
+ * @param contentTypeId - 관광지 타입 ID (필수)
+ * @returns TourIntro 객체 또는 null (API 실패 시)
+ */
+export async function fetchTourIntro(
+  contentId: string,
+  contentTypeId: string
+): Promise<TourIntro | null> {
+  try {
+    console.group("[Tour API Client] Fetching tour intro");
+    console.log("Content ID:", contentId);
+    console.log("Content Type ID:", contentTypeId);
+
+    // contentTypeId가 없으면 null 반환
+    if (!contentTypeId) {
+      console.warn("[Tour API Client] contentTypeId is missing");
+      console.groupEnd();
+      return null;
+    }
+
+    // Server Component에서 내부 API 호출 시 절대 URL 필요
+    const headersList = await import("next/headers").then((m) => m.headers());
+    const host = headersList.get("host");
+    const protocol = headersList.get("x-forwarded-proto") || "https";
+
+    // baseUrl 결정 로직
+    let baseUrl: string;
+    if (host) {
+      baseUrl = `${protocol}://${host}`;
+    } else if (process.env.NEXT_PUBLIC_APP_URL) {
+      baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+    } else if (process.env.VERCEL_URL) {
+      baseUrl = `https://${process.env.VERCEL_URL}`;
+    } else {
+      baseUrl = "http://localhost:3000";
+    }
+
+    console.log("[Tour API Client] Base URL:", baseUrl);
+
+    const apiUrl = new URL("/api/tour", baseUrl);
+    apiUrl.searchParams.set("endpoint", "detailIntro");
+    apiUrl.searchParams.set("contentId", contentId);
+    apiUrl.searchParams.set("contentTypeId", contentTypeId);
+
+    console.log("[Tour API Client] API URL:", apiUrl.toString());
+
+    const response = await fetch(apiUrl.toString(), {
+      next: {
+        revalidate: 3600, // 1시간 캐싱
+      },
+      headers: {
+        "x-forwarded-host": host || "",
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error("[Tour API Client] API Error:", response.status, errorData);
+      console.groupEnd();
+      return null;
+    }
+
+    const data: ApiResponse<TourIntro> = await response.json();
+
+    // API 응답 구조 확인
+    if (data.response?.header?.resultCode !== "0000") {
+      const resultMsg = data.response?.header?.resultMsg || "Unknown error";
+      console.error("[Tour API Client] API Error Response:", resultMsg);
+      console.groupEnd();
+      return null;
+    }
+
+    // items.item이 배열인지 단일 객체인지 확인
+    const items = data.response?.body?.items?.item;
+    const tourIntro: TourIntro | null = Array.isArray(items)
+      ? items[0] || null
+      : items || null;
+
+    if (tourIntro) {
+      console.log("[Tour API Client] Success: Tour intro loaded");
+    } else {
+      console.warn("[Tour API Client] No tour intro found");
+    }
+
+    console.groupEnd();
+    return tourIntro;
+  } catch (error) {
+    console.error("[Tour API Client] Error fetching tour intro:", error);
+    console.groupEnd();
+    return null;
+  }
+}
+
+/**
+ * 관광지 이미지 목록을 가져오는 함수
+ * @param contentId - 관광지 콘텐츠 ID
+ * @returns TourImage 배열 (API 실패 시 빈 배열 반환)
+ */
+export async function fetchTourImages(
+  contentId: string
+): Promise<TourImage[]> {
+  try {
+    console.group("[Tour API Client] Fetching tour images");
+    console.log("Content ID:", contentId);
+
+    // Server Component에서 내부 API 호출 시 절대 URL 필요
+    const headersList = await import("next/headers").then((m) => m.headers());
+    const host = headersList.get("host");
+    const protocol = headersList.get("x-forwarded-proto") || "https";
+
+    // baseUrl 결정 로직
+    let baseUrl: string;
+    if (host) {
+      baseUrl = `${protocol}://${host}`;
+    } else if (process.env.NEXT_PUBLIC_APP_URL) {
+      baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+    } else if (process.env.VERCEL_URL) {
+      baseUrl = `https://${process.env.VERCEL_URL}`;
+    } else {
+      baseUrl = "http://localhost:3000";
+    }
+
+    console.log("[Tour API Client] Base URL:", baseUrl);
+
+    const apiUrl = new URL("/api/tour", baseUrl);
+    apiUrl.searchParams.set("endpoint", "detailImage");
+    apiUrl.searchParams.set("contentId", contentId);
+
+    console.log("[Tour API Client] API URL:", apiUrl.toString());
+
+    const response = await fetch(apiUrl.toString(), {
+      next: {
+        revalidate: 3600, // 1시간 캐싱
+      },
+      headers: {
+        "x-forwarded-host": host || "",
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error("[Tour API Client] API Error:", response.status, errorData);
+      console.log("[Tour API Client] Returning empty array");
+      console.groupEnd();
+      return [];
+    }
+
+    const data: ApiResponse<TourImage> = await response.json();
+
+    // API 응답 구조 확인
+    if (data.response?.header?.resultCode !== "0000") {
+      const resultMsg = data.response?.header?.resultMsg || "Unknown error";
+      console.error("[Tour API Client] API Error Response:", resultMsg);
+      console.log("[Tour API Client] Returning empty array");
+      console.groupEnd();
+      return [];
+    }
+
+    // items.item이 배열인지 단일 객체인지 확인
+    const items = data.response?.body?.items?.item;
+    const tourImages: TourImage[] = Array.isArray(items)
+      ? items
+      : items
+        ? [items]
+        : [];
+
+    console.log(
+      "[Tour API Client] Success:",
+      tourImages.length,
+      "images loaded"
+    );
+    console.groupEnd();
+    return tourImages;
+  } catch (error) {
+    console.error("[Tour API Client] Error fetching tour images:", error);
+    console.log("[Tour API Client] Returning empty array");
+    console.groupEnd();
+    return [];
   }
 }
 

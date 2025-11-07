@@ -7,11 +7,11 @@
 - **Phase 0**: ✅ 완료 (개발 환경 준비)
 - **Phase 1**: ✅ 완료 (기본 구조 & 공통 설정)
 - **Phase 2**: ✅ 완료 (홈페이지 - 관광지 목록)
-- **Phase 3**: ⏳ 진행 중 (상세페이지) - 3.2 기본 정보 섹션 완료
+- **Phase 3**: ✅ 완료 (상세페이지) - 3.2 기본 정보 섹션 완료, 3.4 공유 기능 완료, 3.5 추가 정보 섹션 완료
 - **Phase 4**: ⏸️ 대기 중 (북마크 페이지)
 - **Phase 5**: ⏸️ 부분 완료 (최적화 & 배포)
 
-**다음 단계**: Phase 3.3 지도 섹션
+**다음 단계**: Phase 3.3 지도 섹션 (선택 사항)
 
 ## Phase 0: 개발 환경 및 가이드라인 준비
 
@@ -223,21 +223,50 @@
 
 ### 3.4 공유 기능 (MVP 2.4.5)
 
-- [ ] `components/tour-detail/share-button.tsx`
-  - [ ] 네이밍 규칙 준수 (`ShareButton` 또는 `TourShareButton`)
-- [ ] URL 복사 기능 (클립보드 API)
-- [ ] 복사 완료 토스트 메시지
-- [ ] Open Graph 메타태그 동적 생성
-  - [ ] Next.js 15 `generateMetadata` 함수 사용
-- [ ] 페이지 확인 및 공유 테스트
+- [x] `components/tour-detail/share-button.tsx`
+  - [x] 네이밍 규칙 준수 (`ShareButton` default export)
+- [x] URL 복사 기능 (클립보드 API)
+- [x] 복사 완료 토스트 메시지 (Sonner toast 사용)
+- [x] Open Graph 메타태그 동적 생성
+  - [x] Next.js 15 `generateMetadata` 함수 사용
+- [x] 페이지 확인 및 공유 테스트
+  - [x] 클립보드 API 폴백 처리 (HTTPS 환경)
+  - [x] 접근성 (ARIA 라벨, 키보드 네비게이션)
+  - [x] Spacing-First 정책 준수
+  - [x] 다크 모드 지원
 
-### 3.5 추가 정보 섹션 (향후 구현)
+### 3.5 추가 정보 섹션 (MVP 2.4.2, 2.4.3)
 
-- [ ] `components/tour-detail/detail-intro.tsx` (운영 정보)
-- [ ] `detailIntro2` API 연동
-- [ ] `components/tour-detail/detail-gallery.tsx` (이미지 갤러리)
-- [ ] `detailImage2` API 연동
-- [ ] 페이지 확인
+- [x] `components/tour-detail/detail-intro.tsx` (운영 정보)
+  - [x] Server Component로 구현
+  - [x] 이용시간, 휴무일, 주차, 문의처 등 운영 정보 표시
+  - [x] 빈 값 필드는 표시하지 않음
+  - [x] Spacing-First 정책 준수
+  - [x] 다크 모드 지원
+- [x] `detailIntro2` API 연동
+  - [x] `lib/api/tour-api-client.ts`에 `fetchTourIntro` 함수 추가
+  - [x] contentTypeId 파라미터 포함
+  - [x] 에러 처리 및 로깅
+- [x] `components/tour-detail/detail-gallery.tsx` (이미지 갤러리)
+  - [x] Client Component로 구현 (모달 인터랙션)
+  - [x] 반응형 그리드 레이아웃 (모바일 1열, 태블릿 2열, 데스크톱 3열)
+  - [x] 이미지 클릭 시 전체화면 모달
+  - [x] 모달 내 슬라이드 기능 (이전/다음 버튼)
+  - [x] Next.js Image 컴포넌트 사용
+  - [x] Spacing-First 정책 준수
+  - [x] 다크 모드 지원
+- [x] `detailImage2` API 연동
+  - [x] `lib/api/tour-api-client.ts`에 `fetchTourImages` 함수 추가
+  - [x] 배열 반환 (빈 배열 폴백)
+  - [x] 에러 처리 및 로깅
+- [x] 페이지 통합 (`app/places/[contentId]/page.tsx`)
+  - [x] DetailIntro와 DetailGallery 섹션 추가
+  - [x] Suspense로 감싸서 독립적으로 로딩
+  - [x] 로딩 스켈레톤 UI 구현 (DetailIntroSkeleton, DetailGallerySkeleton)
+  - [x] 에러 처리 및 빈 상태 처리
+- [x] 페이지 확인 및 스타일링
+  - [x] 섹션 순서 확인 (기본 정보 → 운영 정보 → 이미지 갤러리)
+  - [x] 반응형 디자인 검증
 
 ## Phase 4: 북마크 페이지 (`/bookmarks`) - 선택 사항
 

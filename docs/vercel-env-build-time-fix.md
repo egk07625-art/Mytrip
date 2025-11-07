@@ -13,14 +13,17 @@ Error: Missing NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.
 ### 가능한 원인들
 
 1. **빌드 타임 환경 변수 주입 문제**
+
    - Next.js 15의 정적 생성(prerendering) 시점에 환경 변수가 주입되지 않음
    - `next.config.ts`에서 환경 변수를 명시적으로 주입하지 않음
 
 2. **정적 생성 시점 문제**
+
    - `not-found.tsx` 같은 정적 페이지가 빌드 시점에 prerender될 때 환경 변수 접근 불가
    - RootLayout이 정적 생성될 때 환경 변수가 아직 주입되지 않음
 
 3. **Vercel 빌드 캐시 문제**
+
    - 이전 빌드 캐시로 인해 환경 변수가 업데이트되지 않음
 
 4. **환경 변수 적용 범위 문제**
@@ -45,7 +48,8 @@ const nextConfig: NextConfig = {
   },
   // 빌드 타임에 환경 변수를 명시적으로 주입
   env: {
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
   },
 };
 
@@ -55,6 +59,7 @@ export default nextConfig;
 ### 2단계: 빌드 캐시 클리어 및 재배포
 
 1. **Vercel 대시보드에서 빌드 캐시 클리어**
+
    - Settings → General → "Clear Build Cache" 버튼 클릭
    - 또는 Vercel CLI 사용: `vercel --prod --force`
 
@@ -74,6 +79,7 @@ Vercel 대시보드에서 다음을 확인:
 재배포 후 빌드 로그에서 다음을 확인:
 
 1. **환경 변수 디버깅 로그**
+
    ```
    [Layout] Server-side environment check: {
      hasPublishableKey: true,
@@ -94,7 +100,8 @@ Vercel 대시보드에서 다음을 확인:
 
 ```typescript
 // lib/env.ts
-export const CLERK_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "";
+export const CLERK_PUBLISHABLE_KEY =
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "";
 
 if (!CLERK_PUBLISHABLE_KEY && typeof window === "undefined") {
   throw new Error("Missing NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY");
@@ -106,7 +113,11 @@ if (!CLERK_PUBLISHABLE_KEY && typeof window === "undefined") {
 ```typescript
 import { CLERK_PUBLISHABLE_KEY } from "@/lib/env";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY} localization={koKR}>
       {/* ... */}
@@ -124,7 +135,7 @@ import dynamic from "next/dynamic";
 
 const ClerkProvider = dynamic(
   () => import("@clerk/nextjs").then((mod) => mod.ClerkProvider),
-  { ssr: false }
+  { ssr: false },
 );
 ```
 
@@ -145,6 +156,7 @@ const ClerkProvider = dynamic(
 위의 모든 단계를 확인했는데도 문제가 지속되면:
 
 1. **Vercel 지원팀에 문의**
+
    - 빌드 로그 전체 내용 제공
    - 환경 변수 설정 스크린샷 제공
    - `next.config.ts` 파일 내용 제공
@@ -158,4 +170,3 @@ const ClerkProvider = dynamic(
 - [Next.js Environment Variables](https://nextjs.org/docs/app/building-your-application/configuring/environment-variables)
 - [Vercel Environment Variables](https://vercel.com/docs/projects/environment-variables)
 - [Next.js next.config.js env](https://nextjs.org/docs/api-reference/next.config.js/environment-variables)
-

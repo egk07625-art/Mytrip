@@ -1,13 +1,24 @@
-fix: Improve Vercel build-time environment variable handling for Clerk
+feat: Add tour detail intro and gallery sections
 
-- Add explicit env variable injection in next.config.ts for build-time access
-- Enhance environment variable debugging in app/layout.tsx with detailed logging
-- Add comprehensive error messages with debug info for missing env vars
-- Create troubleshooting guides for Vercel environment variable issues:
-  - docs/vercel-clerk-env-fix.md
-  - docs/vercel-env-build-time-fix.md
-  - docs/vercel-env-not-injected-fix.md
+- Add fetchTourIntro API client function for detailIntro2 endpoint
+- Add fetchTourImages API client function for detailImage2 endpoint
+- Create DetailIntro component to display tour operation information
+  - Server Component with Suspense support
+  - Displays operating hours, closed days, parking, inquiry info, etc.
+  - Filters out empty fields dynamically
+- Create DetailGallery component for image gallery
+  - Client Component with modal interaction
+  - Responsive grid layout (1/2/3 columns for mobile/tablet/desktop)
+  - Fullscreen modal with image slider (prev/next buttons)
+  - Uses Next.js Image component for optimization
+- Integrate new sections into place detail page
+  - Add DetailIntro and DetailGallery sections with Suspense boundaries
+  - Implement loading skeleton UI for both sections
+  - Add error handling and empty state handling
+- Update page structure: Basic Info → Operation Info → Image Gallery
 
-This addresses the issue where NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY was not
-available during build-time static generation, causing prerender errors
-for the not-found page.
+All components follow project guidelines:
+- Spacing-First policy (padding + gap, no margin)
+- Tailwind CSS only (no inline styles)
+- Dark mode support
+- Accessibility improvements (ARIA labels, keyboard navigation)
