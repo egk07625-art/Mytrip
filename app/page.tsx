@@ -122,10 +122,15 @@ async function fetchTourList(
         Object.fromEntries(response.headers.entries()),
       );
       console.groupEnd();
+
+      // HTTP status code를 우선 사용하고, 에러 메시지가 있으면 사용
+      const errorMessage =
+        errorData.message || `API 요청 실패: ${response.status}`;
+
       return {
         tours: [],
         totalCount: 0,
-        error: errorData.message || `API 요청 실패: ${response.status}`,
+        error: errorMessage,
       };
     }
 
@@ -293,10 +298,15 @@ async function fetchTourSearch(
         Object.fromEntries(response.headers.entries()),
       );
       console.groupEnd();
+
+      // HTTP status code를 우선 사용하고, 에러 메시지가 있으면 사용
+      const errorMessage =
+        errorData.message || `API 요청 실패: ${response.status}`;
+
       return {
         tours: [],
         totalCount: 0,
-        error: errorData.message || `API 요청 실패: ${response.status}`,
+        error: errorMessage,
       };
     }
 

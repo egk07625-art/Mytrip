@@ -102,7 +102,27 @@ export async function GET(request: NextRequest) {
     console.log("API Key preview:", apiKeyEnv?.substring(0, 10) + "..." || "N/A");
     console.log("VERCEL_URL:", process.env.VERCEL_URL || "N/A");
     console.log("NEXT_PUBLIC_APP_URL:", process.env.NEXT_PUBLIC_APP_URL || "N/A");
+    console.log("NODE_ENV:", process.env.NODE_ENV || "N/A");
+    console.log("VERCEL:", !!process.env.VERCEL);
     console.groupEnd();
+    
+    // 환경변수가 없으면 즉시 에러 반환
+    if (!apiKeyEnv) {
+      console.error("[Tour API] API Key not found!");
+      return NextResponse.json(
+        {
+          error: "Configuration error",
+          message: "환경변수가 설정되지 않았습니다. Vercel 대시보드에서 TOUR_API_KEY 환경변수를 확인하고 재배포해주세요.",
+          details: {
+            TOUR_API_KEY_exists: !!process.env.TOUR_API_KEY,
+            NEXT_PUBLIC_TOUR_API_KEY_exists: !!process.env.NEXT_PUBLIC_TOUR_API_KEY,
+            NODE_ENV: process.env.NODE_ENV,
+            VERCEL: !!process.env.VERCEL,
+          },
+        },
+        { status: 500 }
+      );
+    }
     
     const searchParams = request.nextUrl.searchParams;
     const endpoint = searchParams.get("endpoint") as EndpointType | null;
@@ -242,7 +262,6 @@ export async function GET(request: NextRequest) {
           {
             error: "Authentication failed",
             message: "API 키가 유효하지 않거나 인증에 실패했습니다. 아래 사항을 확인해주세요:\n1. Vercel에 TOUR_API_KEY 환경변수가 설정되어 있는지\n2. 환경변수 설정 후 재배포를 했는지\n3. API 키가 올바른지 (공공데이터포털에서 확인)\n4. API 키에 공백이나 특수문자가 포함되어 있지 않은지",
-            status: response.status,
             details: errorText.substring(0, 1000), // 에러 메시지 처음 1000자
             apiKeyLength: getTourApiKey().length,
             apiKeyPreview: getTourApiKey().substring(0, 10) + "...",
@@ -293,10 +312,17 @@ export async function GET(request: NextRequest) {
 
     // 환경변수 에러인 경우
     if (error instanceof Error && error.message.includes("TOUR_API_KEY")) {
+      console.error("[Tour API] Environment variable check:");
+      console.error("  - TOUR_API_KEY exists:", !!process.env.TOUR_API_KEY);
+      console.error("  - NEXT_PUBLIC_TOUR_API_KEY exists:", !!process.env.NEXT_PUBLIC_TOUR_API_KEY);
+      console.error("  - NODE_ENV:", process.env.NODE_ENV);
+      console.error("  - VERCEL:", !!process.env.VERCEL);
+      
       return NextResponse.json(
         {
           error: "Configuration error",
-          message: error.message,
+          message: "환경변수가 설정되지 않았습니다. Vercel 대시보드에서 TOUR_API_KEY 환경변수를 확인하고 재배포해주세요.",
+          details: error.message,
         },
         { status: 500 }
       );
