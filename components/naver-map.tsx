@@ -30,7 +30,6 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { TourItem } from "@/lib/types/tour";
 import {
-  convertKATECToNaver,
   convertToursToCoordinates,
   calculateCenter,
   calculateBounds,
@@ -162,24 +161,8 @@ function MapErrorPlaceholder({
   );
 }
 
-/**
- * 지도 로딩 스켈레톤 컴포넌트
- */
-function MapLoadingSkeleton({ className }: { className?: string }) {
-  return (
-    <div
-      className={`flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 animate-pulse ${className || ""}`}
-      style={{ minHeight: "600px" }}
-      role="status"
-      aria-label="지도 로딩 중"
-    >
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-sm text-gray-600 dark:text-gray-400">지도를 불러오는 중...</p>
-      </div>
-    </div>
-  );
-}
+// MapLoadingSkeleton은 현재 사용되지 않으므로 제거
+// 필요시 인라인 로딩 UI 사용
 
 /**
  * 네이버 지도 컴포넌트
@@ -371,7 +354,8 @@ export default function NaverMap({
         console.log("[NaverMap] 지도 인스턴스 생성 시작");
         
         // 지도 타입 설정 (네이버 지도 API v3)
-        const mapTypeId = maps.MapTypeId?.NORMAL || maps.MapTypeId?.normal || 'normal';
+        // MapTypeId는 타입 정의에 없으므로 타입 단언 사용
+        const mapTypeId = (maps as any).MapTypeId?.NORMAL || (maps as any).MapTypeId?.normal || 'normal';
         
         const mapOptions: any = {
           center: defaultCenter,
@@ -387,7 +371,8 @@ export default function NaverMap({
         console.log("[NaverMap] 지도 인스턴스 생성 완료", { mapTypeId });
 
         // 지도 이벤트 리스너 추가 (타일 로드 확인)
-        const eventAPI = maps.Event || maps.event;
+        // Event는 타입 정의에 없으므로 타입 단언 사용
+        const eventAPI = (maps as any).Event || maps.event;
         if (eventAPI && eventAPI.addListener) {
           // 지도가 완전히 로드되었을 때 확인
           eventAPI.addListener(mapInstanceRef.current, 'idle', () => {
@@ -445,7 +430,7 @@ export default function NaverMap({
       isMounted = false;
       console.log("[NaverMap] cleanup 실행");
     };
-  }, [apiKey, mapRefReady]); // apiKey와 mapRefReady를 의존성으로 추가
+  }, [apiKey, mapRefReady, tours.length]); // apiKey, mapRefReady, tours.length를 의존성으로 추가
 
   // 관광지 목록 변경 시 마커 업데이트
   useEffect(() => {
@@ -468,11 +453,12 @@ export default function NaverMap({
     const maps = window.naver.maps;
     
     // Event API 확인
-    if (!maps.Event && !maps.event) {
+    // Event는 타입 정의에 없으므로 타입 단언 사용
+    if (!(maps as any).Event && !maps.event) {
       console.error("[NaverMap] Event API를 찾을 수 없습니다:", {
         mapsKeys: Object.keys(maps),
         hasEvent: !!maps.event,
-        hasEventCapital: !!maps.Event,
+        hasEventCapital: !!(maps as any).Event,
       });
       console.groupEnd();
       return;
@@ -506,7 +492,8 @@ export default function NaverMap({
 
     if (center && bounds) {
       const mapCenter = new maps.LatLng(center.lat, center.lng);
-      const mapBounds = new maps.LatLngBounds(
+      // LatLngBounds는 타입 정의와 다르게 인자를 받을 수 있으므로 타입 단언 사용
+      const mapBounds = new (maps.LatLngBounds as any)(
         new maps.LatLng(bounds.minLat, bounds.minLng),
         new maps.LatLng(bounds.maxLat, bounds.maxLng)
       );
@@ -584,7 +571,8 @@ export default function NaverMap({
       infoWindowsRef.current.set(tour.contentid, infoWindow);
 
       // Event API 사용 (Event 또는 event 모두 지원)
-      const eventAPI = maps.Event || maps.event;
+      // Event는 타입 정의에 없으므로 타입 단언 사용
+      const eventAPI = (maps as any).Event || maps.event;
       if (eventAPI && eventAPI.addListener) {
         eventAPI.addListener(marker, "click", () => {
           infoWindowsRef.current.forEach((iw) => iw.close());
@@ -632,8 +620,6 @@ export default function NaverMap({
     const infoWindow = infoWindowsRef.current.get(selectedTourId);
 
     if (marker && infoWindow) {
-      const maps = window.naver.maps;
-
       // 지도 중심 이동
       mapInstanceRef.current.setCenter(marker.getPosition());
       mapInstanceRef.current.setZoom(15);

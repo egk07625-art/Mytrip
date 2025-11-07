@@ -2,6 +2,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FileQuestion } from "lucide-react";
 
+// 정적 생성 강제 (useSearchParams 에러 방지)
+export const dynamic = 'force-static';
+
 export default function NotFound() {
   return (
     <div className="flex flex-col items-center justify-center gap-6 min-h-[calc(100vh-80px)] p-8">

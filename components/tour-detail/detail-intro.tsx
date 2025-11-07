@@ -38,7 +38,6 @@ import {
   Info,
 } from "lucide-react";
 import { fetchTourIntro } from "@/lib/api/tour-api-client";
-import type { TourIntro } from "@/lib/types/tour";
 import ErrorMessageWithRetry from "@/components/error-message-with-retry";
 
 interface DetailIntroProps {

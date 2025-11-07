@@ -11,35 +11,28 @@
  * 3. 크롤링 규칙 설정
  *
  * @dependencies
- * - next/headers: base URL 가져오기
+ * - 환경 변수: NEXT_PUBLIC_APP_URL 또는 VERCEL_URL
  */
 
 import { MetadataRoute } from "next";
-import { headers } from "next/headers";
 
 /**
  * Base URL을 가져오는 헬퍼 함수
+ * 정적 생성 시 headers()를 사용할 수 없으므로 환경 변수만 사용
  */
 async function getBaseUrl(): Promise<string> {
-  try {
-    const headersList = await headers();
-    const host = headersList.get("host");
-    const protocol = headersList.get("x-forwarded-proto") || "https";
-
-    if (host) {
-      return `${protocol}://${host}`;
-    }
-  } catch (error) {
-    console.error("[Robots] Error getting headers:", error);
+  // 환경 변수 우선 사용
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL;
   }
 
-  // 폴백: 환경 변수 또는 기본값
-  return (
-    process.env.NEXT_PUBLIC_APP_URL ||
-    (process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "https://mytrip.example.com")
-  );
+  // Vercel 환경 변수
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+
+  // 기본값
+  return "https://mytrip-eight.vercel.app";
 }
 
 /**

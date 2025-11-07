@@ -59,6 +59,10 @@ declare global {
         Marker: new (options: any) => any;
         InfoWindow: new (options: any) => any;
         LatLng: new (lat: number, lng: number) => any;
+        LatLngBounds: new () => any;
+        event: {
+          addListener: (target: any, event: string, handler: () => void) => void;
+        };
       };
     };
   }

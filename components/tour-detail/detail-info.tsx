@@ -33,11 +33,9 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { Copy, Phone, MapPin, Globe, ExternalLink, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { TourDetail } from "@/lib/types/tour";
-import { CONTENT_TYPE_LABEL } from "@/lib/types/tour";
 
 interface DetailInfoProps {
   /**
@@ -48,23 +46,6 @@ interface DetailInfoProps {
    * 추가 클래스명
    */
   className?: string;
-}
-
-/**
- * 이미지 URL이 유효한지 확인하는 헬퍼 함수
- */
-function isValidImageUrl(url?: string): boolean {
-  return Boolean(url && url.trim().length > 0);
-}
-
-/**
- * 관광 타입 라벨을 가져오는 헬퍼 함수
- */
-function getContentTypeLabel(contenttypeid: string): string {
-  return (
-    CONTENT_TYPE_LABEL[contenttypeid as keyof typeof CONTENT_TYPE_LABEL] ||
-    "기타"
-  );
 }
 
 /**
@@ -105,9 +86,6 @@ export default function DetailInfo({
 }: DetailInfoProps) {
   const [copied, setCopied] = useState(false);
 
-  const imageUrl = tourDetail.firstimage || tourDetail.firstimage2;
-  const hasImage = isValidImageUrl(imageUrl);
-  const contentTypeLabel = getContentTypeLabel(tourDetail.contenttypeid);
   const fullAddress = tourDetail.addr2
     ? `${tourDetail.addr1} ${tourDetail.addr2}`
     : tourDetail.addr1;

@@ -22,7 +22,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import TourListWrapper from "@/components/tour-list-wrapper";
 import NaverMap from "@/components/naver-map";
 import MapTabs from "@/components/map-tabs";
@@ -50,7 +49,6 @@ export default function TourListMapContainer({
   className,
 }: TourListMapContainerProps) {
   const [selectedTourId, setSelectedTourId] = useState<string | undefined>();
-  const router = useRouter();
 
   // 마커 클릭 핸들러
   const handleMarkerClick = (tour: TourItem) => {

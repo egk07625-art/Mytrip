@@ -12,38 +12,53 @@
  * 4. 빌드 타임 캐싱 활용
  *
  * @dependencies
- * - next/headers: base URL 가져오기
  * - @/lib/api/tour-api-client: fetchAreaCodes, 관광지 목록 조회
  */
 
 import { MetadataRoute } from "next";
-import { headers } from "next/headers";
-import { fetchAreaCodes } from "@/lib/api/tour-api-client";
 import type { TourItem } from "@/lib/types/tour";
 
 /**
+ * 기본 지역 목록 (정적 생성 시 사용)
+ * 한국의 모든 시/도 포함 (총 17개)
+ */
+const DEFAULT_AREA_CODES = [
+  { code: "1", name: "서울" },
+  { code: "2", name: "인천" },
+  { code: "3", name: "대전" },
+  { code: "4", name: "대구" },
+  { code: "5", name: "광주" },
+  { code: "6", name: "부산" },
+  { code: "7", name: "울산" },
+  { code: "8", name: "세종특별자치시" },
+  { code: "31", name: "경기도" },
+  { code: "32", name: "강원특별자치도" },
+  { code: "33", name: "충청북도" },
+  { code: "34", name: "충청남도" },
+  { code: "35", name: "전라북도" },
+  { code: "36", name: "전라남도" },
+  { code: "37", name: "경상북도" },
+  { code: "38", name: "경상남도" },
+  { code: "39", name: "제주특별자치도" },
+];
+
+/**
  * Base URL을 가져오는 헬퍼 함수
+ * 정적 생성 시 headers()를 사용할 수 없으므로 환경 변수만 사용
  */
 async function getBaseUrl(): Promise<string> {
-  try {
-    const headersList = await headers();
-    const host = headersList.get("host");
-    const protocol = headersList.get("x-forwarded-proto") || "https";
-
-    if (host) {
-      return `${protocol}://${host}`;
-    }
-  } catch (error) {
-    console.error("[Sitemap] Error getting headers:", error);
+  // 환경 변수 우선 사용
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL;
   }
 
-  // 폴백: 환경 변수 또는 기본값
-  return (
-    process.env.NEXT_PUBLIC_APP_URL ||
-    (process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "https://mytrip.example.com")
-  );
+  // Vercel 환경 변수
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+
+  // 기본값
+  return "https://mytrip-eight.vercel.app";
 }
 
 /**
@@ -61,8 +76,8 @@ async function fetchTourContentIds(): Promise<string[]> {
     const baseUrl = await getBaseUrl();
     console.log("[Sitemap] Base URL:", baseUrl);
 
-    // 지역코드 목록 가져오기
-    const areaCodes = await fetchAreaCodes();
+    // 정적 생성 시 기본 지역 목록 사용 (headers() 사용 불가)
+    const areaCodes = DEFAULT_AREA_CODES;
     console.log("[Sitemap] Area codes:", areaCodes.length);
 
     // 주요 지역에서만 관광지 가져오기 (성능 최적화)

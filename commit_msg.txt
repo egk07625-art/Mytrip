@@ -1,14 +1,17 @@
-feat: improve UI/UX for bookmarks page and navbar
+fix: resolve build errors for Vercel deployment
 
-- Reduce bookmark page element sizes by 20% for better space utilization
-  - Decrease font sizes, padding, and spacing throughout bookmark components
-  - Optimize tour card component for more compact display
-- Make navbar sticky on scroll for better navigation accessibility
-  - Add sticky positioning with backdrop blur effect
-  - Maintain navbar visibility across all pages
-- Integrate search functionality into navbar
-  - Add compact variant to TourSearch component for navbar usage
-  - Center search bar in navbar layout
-  - Remove duplicate search icons and increase search input width
-- Update bookmark list and tour card components for consistent sizing
-
+- Fix MapTypeId, Event, and LatLngBounds type errors in naver-map.tsx
+  - Use type assertions for MapTypeId and Event API access
+  - Fix LatLngBounds constructor type error
+- Remove unused imports and variables
+  - Remove MapLoadingSkeleton component
+  - Remove unused Image import from detail-info.tsx
+  - Remove unused router from tour-list-map-container.tsx
+  - Remove unused TourIntro import from detail-intro.tsx
+- Fix static generation errors in sitemap.ts and robots.ts
+  - Remove headers() usage for static generation compatibility
+  - Use environment variables instead of headers() for base URL
+  - Use default area codes instead of fetchAreaCodes() in sitemap
+- Add force-static export to not-found.tsx
+- Update useEffect dependencies in naver-map.tsx
+- Clean up .next folder and pnpm cache
